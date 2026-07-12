@@ -14,6 +14,9 @@ reports/*.csv
 !reports/results.csv
 reports/*_summary.json
 !reports/saferag_llm_pilot_summary.json
+reports/saferag_gpt55_audit.json
+reports/saferag_gpt55_report.md
+reports/saferag_gpt55_results.json
 data/generated/
 data/external/
 tmp/

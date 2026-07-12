@@ -1,5 +1,10 @@
 # RAGShield SafeRAG GPT-5.5 Study Protocol
 
+> **Archived development protocol.** This version was used only for the eight development
+> cases and produced no confirmatory outputs. The active study is the lower-cost
+> [GPT-5 mini v4 protocol](saferag_gpt5mini_protocol.md). Historical runners remain
+> reproducible from Git commit `81773c9`.
+
 ## Research Question
 
 Does untrusted-context separation or the complete RAGShield defense reduce adoption of

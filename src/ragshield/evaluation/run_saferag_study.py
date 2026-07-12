@@ -351,18 +351,30 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--max-generation-calls", type=int, default=None)
     parser.add_argument("--max-judge-calls", type=int, default=None)
-    parser.add_argument("--generation-output", default="reports/saferag_gpt55_generations.jsonl")
-    parser.add_argument("--judgment-output", default="reports/saferag_gpt55_judgments.jsonl")
-    parser.add_argument("--results-output", default="reports/saferag_gpt55_results.json")
-    parser.add_argument("--report-output", default="reports/saferag_gpt55_report.md")
-    parser.add_argument("--audit-output", default="reports/saferag_gpt55_audit.json")
-    parser.add_argument("--blind-audit-output", default="reports/saferag_gpt55_blind_audit.csv")
-    parser.add_argument("--blind-audit-key", default="reports/saferag_gpt55_blind_audit_key.jsonl")
+    parser.add_argument(
+        "--generation-output", default="reports/saferag_gpt5mini_generations.jsonl"
+    )
+    parser.add_argument(
+        "--judgment-output", default="reports/saferag_gpt5mini_judgments.jsonl"
+    )
+    parser.add_argument("--results-output", default="reports/saferag_gpt5mini_results.json")
+    parser.add_argument("--report-output", default="reports/saferag_gpt5mini_report.md")
+    parser.add_argument("--audit-output", default="reports/saferag_gpt5mini_audit.json")
+    parser.add_argument(
+        "--blind-audit-output", default="reports/saferag_gpt5mini_blind_audit.csv"
+    )
+    parser.add_argument(
+        "--blind-audit-key", default="reports/saferag_gpt5mini_blind_audit_key.jsonl"
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    if args.model != MODEL_SNAPSHOT or args.judge_model != MODEL_SNAPSHOT:
+        raise SystemExit(
+            f"Protocol {PROTOCOL_VERSION} requires generator and judge {MODEL_SNAPSHOT}."
+        )
     verify_frozen_protocol()
     verify_frozen_judge()
     calls = expected_calls(args.root, args.systems, args.split)

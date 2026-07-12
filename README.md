@@ -62,11 +62,11 @@ See [the full SafeRAG report](reports/saferag_report.md) and
 The upstream repository has no explicit redistribution license at the pinned commit.
 Raw files are therefore downloaded directly from the authors and excluded from this repo.
 
-## Frozen GPT-5.5 Study
+## Frozen GPT-5 Mini Study
 
 The interview-facing confirmatory study is preregistered in
-[docs/saferag_gpt55_protocol.md](docs/saferag_gpt55_protocol.md). It uses the pinned
-`gpt-5.5-2026-04-23` snapshot and three real-model conditions:
+[docs/saferag_gpt5mini_protocol.md](docs/saferag_gpt5mini_protocol.md). It uses the pinned
+`gpt-5-mini-2025-08-07` snapshot and three real-model conditions:
 
 - `baseline`: BM25 retrieval plus generation without defenses.
 - `context_boundary`: the same initial contexts with untrusted-evidence separation.
@@ -85,7 +85,7 @@ The controlled synthetic corpus is evaluated separately with the same real model
 privacy canaries, tenant filtering, prompt injection, and actual tool-gate decisions. Its
 results are component evidence, not external benchmark evidence.
 
-At the current commit, the frozen runners and tests are implemented; GPT-5.5 result files
+At the current commit, the frozen runners and tests are implemented; GPT-5 mini result files
 must not be claimed until the paid runs complete and their response metadata is audited.
 
 ## Controlled Synthetic Results
@@ -189,17 +189,17 @@ usage, latency, and model answers. This controlled generation test uses labeled 
 contexts and the paper's attack-keyword formula, but it does not claim to reproduce the
 paper's BM25 retrieval or LLM-based QuestEval results.
 
-Frozen GPT-5.5 study dry run (no API call):
+Frozen GPT-5 mini study dry run (no API call):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt55_study.ps1 `
+powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 `
   -Phase dry-run
 ```
 
 Complete interview evidence suite (2,934 resumable paid calls):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run_gpt55_interview_suite.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run_gpt5mini_interview_suite.ps1
 ```
 
 Both paid scripts require explicit confirmation and hidden key input. Raw generations and
@@ -241,5 +241,5 @@ access, or real data exfiltration.
 - Scenario v2 is structurally more varied than the original template corpus, but remains
   deterministic and author-generated; broader empirical claims require external datasets,
   stronger retrievers, multiple LLMs, and adaptive attacks.
-- The automated confirmatory judge uses the same GPT-5.5 family as the generator. Its
+- The automated confirmatory judge uses the same GPT-5 mini snapshot as the generator. Its
   adoption labels require validation against the generated blinded author-review sheet.

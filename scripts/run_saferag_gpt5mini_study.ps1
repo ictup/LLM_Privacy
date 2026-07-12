@@ -6,7 +6,7 @@ param(
     [int]$Workers = 4
 )
 
-$model = "gpt-5.5-2026-04-23"
+$model = "gpt-5-mini-2025-08-07"
 $env:PYTHONPATH = "src"
 
 if ($Phase -eq "dry-run" -or $Phase -eq "report") {
@@ -25,7 +25,7 @@ if ($Phase -eq "dry-run" -or $Phase -eq "report") {
 }
 
 $confirmation = Read-Host (
-    "This run can make up to 2,322 paid API calls for the full study. " +
+    "This run can make up to 2,322 paid GPT-5 mini API calls for all 387 cases. " +
     "Type RUN to continue"
 )
 if ($confirmation -ne "RUN") {

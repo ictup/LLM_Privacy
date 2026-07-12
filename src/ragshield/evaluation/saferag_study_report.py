@@ -1,4 +1,4 @@
-"""Reporting, audit artifacts, and paired analysis for the SafeRAG GPT-5.5 study."""
+"""Reporting, audit artifacts, and paired analysis for the SafeRAG model study."""
 
 from __future__ import annotations
 
@@ -23,8 +23,10 @@ from ragshield.evaluation.saferag_study_protocol import (
 )
 
 
-GPT55_INPUT_PRICE_PER_MILLION = 5.0
-GPT55_OUTPUT_PRICE_PER_MILLION = 30.0
+MODEL_STANDARD_PRICES = {
+    "gpt-5-mini-2025-08-07": {"input": 0.25, "output": 2.0},
+    "gpt-5.5-2026-04-23": {"input": 5.0, "output": 30.0},
+}
 
 
 def _key(row: dict[str, Any]) -> tuple[str, str, int]:
@@ -180,18 +182,24 @@ def _split_summary(rows: list[dict[str, Any]], split: str) -> dict[str, Any]:
     }
 
 
-def _cost(rows: list[dict[str, Any]]) -> dict[str, float | int]:
+def _cost(rows: list[dict[str, Any]], model: str) -> dict[str, float | int | None | str]:
     input_tokens = sum(row["usage"]["input_tokens"] for row in rows)
     output_tokens = sum(row["usage"]["output_tokens"] for row in rows)
-    usd = (
-        input_tokens / 1_000_000 * GPT55_INPUT_PRICE_PER_MILLION
-        + output_tokens / 1_000_000 * GPT55_OUTPUT_PRICE_PER_MILLION
-    )
+    prices = MODEL_STANDARD_PRICES.get(model)
+    usd = None
+    if prices is not None:
+        usd = (
+            input_tokens / 1_000_000 * prices["input"]
+            + output_tokens / 1_000_000 * prices["output"]
+        )
     return {
+        "model": model,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "total_tokens": input_tokens + output_tokens,
-        "estimated_usd_at_documented_gpt55_standard_rates": round(usd, 4),
+        "estimated_usd_at_documented_standard_rates": round(usd, 4)
+        if usd is not None
+        else None,
     }
 
 
@@ -229,8 +237,8 @@ def build_summary(
                 row["metrics"].get("judge_confidence") == "low" for row in judgment_rows
             ),
         },
-        "generation_cost": _cost(generation_rows),
-        "judge_cost": _cost(judgment_rows),
+        "generation_cost": _cost(generation_rows, generator_model),
+        "judge_cost": _cost(judgment_rows, judge_model),
         "development": _split_summary(merged, "development"),
         "confirmatory": _split_summary(merged, "confirmatory"),
         "limitations": [
@@ -250,7 +258,7 @@ def _pct(value: float | None) -> str:
 def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
     confirmatory = summary["confirmatory"]
     lines = [
-        "# RAGShield SafeRAG GPT-5.5 Confirmatory Study",
+        "# RAGShield SafeRAG GPT-5 mini Confirmatory Study",
         "",
         "## Study Identity",
         "",
@@ -346,9 +354,12 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
         )
     generation_cost = summary["generation_cost"]
     judge_cost = summary["judge_cost"]
+    cost_parts = [
+        generation_cost["estimated_usd_at_documented_standard_rates"],
+        judge_cost["estimated_usd_at_documented_standard_rates"],
+    ]
     total_estimated_cost = (
-        generation_cost["estimated_usd_at_documented_gpt55_standard_rates"]
-        + judge_cost["estimated_usd_at_documented_gpt55_standard_rates"]
+        sum(cost_parts) if all(value is not None for value in cost_parts) else None
     )
     lines.extend(
         [
@@ -358,8 +369,8 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
             f"- Generation tokens: {generation_cost['total_tokens']}",
             f"- Judge tokens: {judge_cost['total_tokens']}",
             (
-                "- Estimated API cost at documented GPT-5.5 standard rates: "
-                f"${total_estimated_cost:.2f}"
+                "- Estimated API cost at documented standard rates: "
+                + (f"${total_estimated_cost:.2f}" if total_estimated_cost is not None else "n/a")
             ),
             "",
             "## Limitations",

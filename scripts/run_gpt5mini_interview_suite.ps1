@@ -2,9 +2,9 @@ param(
     [int]$Workers = 4
 )
 
-$model = "gpt-5.5-2026-04-23"
+$model = "gpt-5-mini-2025-08-07"
 $confirmation = Read-Host (
-    "The complete suite can make up to 2,934 paid GPT-5.5 API calls. " +
+    "The complete suite can make up to 2,934 paid GPT-5 mini API calls. " +
     "Type RUN to continue"
 )
 if ($confirmation -ne "RUN") {

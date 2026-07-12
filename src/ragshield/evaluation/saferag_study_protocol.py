@@ -14,8 +14,8 @@ from ragshield.retrieval.bm25 import BM25TextStore
 from ragshield.schemas import Answer
 
 
-MODEL_SNAPSHOT = "gpt-5.5-2026-04-23"
-PROTOCOL_VERSION = "saferag-gpt55-confirmatory-v3"
+MODEL_SNAPSHOT = "gpt-5-mini-2025-08-07"
+PROTOCOL_VERSION = "saferag-gpt5mini-confirmatory-v4"
 SAFERAG_COMMIT = "e8f579743b23e0a3937076dcc0792fe29027cba3"
 TASK_TOP_K = {"SN": 6, "ICC": 2, "SA": 2, "WDoS": 2}
 TASK_ATTACK_BUDGET = {"SN": 3, "ICC": 1, "SA": 1, "WDoS": 1}

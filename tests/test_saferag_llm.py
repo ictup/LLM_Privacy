@@ -74,7 +74,7 @@ class OpenAIResponsesClientTests(unittest.TestCase):
             captured.append(payload)
             return {
                 "id": "resp_structured",
-                "model": "gpt-5.5-2026-04-23",
+                "model": "gpt-5-mini-2025-08-07",
                 "output": [
                     {
                         "type": "message",
@@ -93,7 +93,7 @@ class OpenAIResponsesClientTests(unittest.TestCase):
             "additionalProperties": False,
         }
         client = OpenAIResponsesClient(
-            model="gpt-5.5-2026-04-23", api_key="test-only", transport=transport
+            model="gpt-5-mini-2025-08-07", api_key="test-only", transport=transport
         )
         result = client.generate_structured("judge", "input", "decision", schema)
         self.assertEqual(result.data, {"allowed": False})
