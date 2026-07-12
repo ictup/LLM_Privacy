@@ -8,7 +8,7 @@ redistributed by this repository.
 |---|---|---|---|
 | SafeRAG | ACL 2025 Long Paper | Indirect prompt injection and retrieval manipulation | 377-case GPT-5 mini study complete |
 | TAB | Computational Linguistics 2022 | PII detection and text anonymization | Full 127-document official test split evaluated offline |
-| Tensor Trust v1 | ICLR 2024 | Direct prompt hijacking and prompt/secret extraction | Official files validated; fixed-sample real-model study pending |
+| Tensor Trust v1 | ICLR 2024 | Direct prompt hijacking and prompt/secret extraction | 100-case, 600-call paired DeepSeek study complete |
 | PrivacyLens | NeurIPS 2024 Datasets and Benchmarks | Contextual privacy leakage in agent actions | Official 493 cases validated; fixed-sample real-model study pending |
 
 ## What "Real" Means Here

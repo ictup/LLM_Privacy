@@ -1,0 +1,310 @@
+{
+  "study": {
+    "protocol_version": "tensor-trust-deepseek-pilot-v1",
+    "benchmark": "Tensor Trust",
+    "benchmark_version": "v1",
+    "model": "deepseek-v4-flash",
+    "systems": [
+      "baseline",
+      "context_boundary",
+      "ragshield_full"
+    ],
+    "planned_cases": 100,
+    "complete_cases": 100,
+    "generation_rows": 600,
+    "scoring": "deterministic_verbatim_extraction_and_access_granted"
+  },
+  "overall": {
+    "baseline": {
+      "attack_success": {
+        "n": 100,
+        "count": 57,
+        "rate": 0.57,
+        "ci_low": 0.472154,
+        "ci_high": 0.662667
+      },
+      "raw_attack_success": {
+        "n": 100,
+        "count": 57,
+        "rate": 0.57,
+        "ci_low": 0.472154,
+        "ci_high": 0.662667
+      },
+      "utility_success": {
+        "n": 100,
+        "count": 61,
+        "rate": 0.61,
+        "ci_low": 0.51203,
+        "ci_high": 0.699831
+      },
+      "output_block_rate": {
+        "n": 200,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.018845
+      },
+      "attack_output_intervention": {
+        "n": 100,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.036993
+      },
+      "utility_output_intervention": {
+        "n": 100,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.036993
+      },
+      "mean_latency_ms": 1669.77
+    },
+    "context_boundary": {
+      "attack_success": {
+        "n": 100,
+        "count": 35,
+        "rate": 0.35,
+        "ci_low": 0.263642,
+        "ci_high": 0.447456
+      },
+      "raw_attack_success": {
+        "n": 100,
+        "count": 35,
+        "rate": 0.35,
+        "ci_low": 0.263642,
+        "ci_high": 0.447456
+      },
+      "utility_success": {
+        "n": 100,
+        "count": 87,
+        "rate": 0.87,
+        "ci_low": 0.790196,
+        "ci_high": 0.922428
+      },
+      "output_block_rate": {
+        "n": 200,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.018845
+      },
+      "attack_output_intervention": {
+        "n": 100,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.036993
+      },
+      "utility_output_intervention": {
+        "n": 100,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.036993
+      },
+      "mean_latency_ms": 1563.032
+    },
+    "ragshield_full": {
+      "attack_success": {
+        "n": 100,
+        "count": 0,
+        "rate": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.036993
+      },
+      "raw_attack_success": {
+        "n": 100,
+        "count": 36,
+        "rate": 0.36,
+        "ci_low": 0.272712,
+        "ci_high": 0.457646
+      },
+      "utility_success": {
+        "n": 100,
+        "count": 80,
+        "rate": 0.8,
+        "ci_low": 0.711171,
+        "ci_high": 0.866633
+      },
+      "output_block_rate": {
+        "n": 200,
+        "count": 40,
+        "rate": 0.2,
+        "ci_low": 0.150452,
+        "ci_high": 0.260855
+      },
+      "attack_output_intervention": {
+        "n": 100,
+        "count": 38,
+        "rate": 0.38,
+        "ci_low": 0.290976,
+        "ci_high": 0.477902
+      },
+      "utility_output_intervention": {
+        "n": 100,
+        "count": 2,
+        "rate": 0.02,
+        "ci_low": 0.005502,
+        "ci_high": 0.070012
+      },
+      "mean_latency_ms": 1489.439
+    }
+  },
+  "by_task": {
+    "extraction": {
+      "baseline": {
+        "attack_success": {
+          "n": 50,
+          "count": 29,
+          "rate": 0.58,
+          "ci_low": 0.442334,
+          "ci_high": 0.70625
+        },
+        "utility_success": {
+          "n": 50,
+          "count": 31,
+          "rate": 0.62,
+          "ci_low": 0.481504,
+          "ci_high": 0.741372
+        }
+      },
+      "context_boundary": {
+        "attack_success": {
+          "n": 50,
+          "count": 16,
+          "rate": 0.32,
+          "ci_low": 0.207582,
+          "ci_high": 0.458103
+        },
+        "utility_success": {
+          "n": 50,
+          "count": 45,
+          "rate": 0.9,
+          "ci_low": 0.786398,
+          "ci_high": 0.956524
+        }
+      },
+      "ragshield_full": {
+        "attack_success": {
+          "n": 50,
+          "count": 0,
+          "rate": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.071348
+        },
+        "utility_success": {
+          "n": 50,
+          "count": 41,
+          "rate": 0.82,
+          "ci_low": 0.692039,
+          "ci_high": 0.902298
+        }
+      }
+    },
+    "hijacking": {
+      "baseline": {
+        "attack_success": {
+          "n": 50,
+          "count": 28,
+          "rate": 0.56,
+          "ci_low": 0.42306,
+          "ci_high": 0.688378
+        },
+        "utility_success": {
+          "n": 50,
+          "count": 30,
+          "rate": 0.6,
+          "ci_low": 0.461814,
+          "ci_high": 0.723916
+        }
+      },
+      "context_boundary": {
+        "attack_success": {
+          "n": 50,
+          "count": 19,
+          "rate": 0.38,
+          "ci_low": 0.258628,
+          "ci_high": 0.518496
+        },
+        "utility_success": {
+          "n": 50,
+          "count": 42,
+          "rate": 0.84,
+          "ci_low": 0.714858,
+          "ci_high": 0.916626
+        }
+      },
+      "ragshield_full": {
+        "attack_success": {
+          "n": 50,
+          "count": 0,
+          "rate": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.071348
+        },
+        "utility_success": {
+          "n": 50,
+          "count": 39,
+          "rate": 0.78,
+          "ci_low": 0.647585,
+          "ci_high": 0.872461
+        }
+      }
+    }
+  },
+  "paired_effects": {
+    "context_boundary": {
+      "attack_difference": {
+        "n": 100,
+        "difference": -0.22,
+        "ci_low": -0.34,
+        "ci_high": -0.1
+      },
+      "attack_mcnemar": {
+        "baseline_only": 32,
+        "treatment_only": 10,
+        "discordant": 42,
+        "p_value": 0.00094067
+      },
+      "utility_difference": {
+        "n": 100,
+        "difference": 0.26,
+        "ci_low": 0.16,
+        "ci_high": 0.36
+      }
+    },
+    "ragshield_full": {
+      "attack_difference": {
+        "n": 100,
+        "difference": -0.57,
+        "ci_low": -0.67,
+        "ci_high": -0.47
+      },
+      "attack_mcnemar": {
+        "baseline_only": 57,
+        "treatment_only": 0,
+        "discordant": 57,
+        "p_value": 0.0
+      },
+      "utility_difference": {
+        "n": 100,
+        "difference": 0.19,
+        "ci_low": 0.09,
+        "ci_high": 0.28
+      }
+    }
+  },
+  "cost": {
+    "input_tokens": 186388,
+    "output_tokens": 24078,
+    "total_tokens": 210466,
+    "estimated_usd_at_cache_miss_rates": 0.032836
+  },
+  "limitations": [
+    "This fixed-sample pilot is not a full benchmark run.",
+    "Extraction scoring detects verbatim access-code leakage, not paraphrased hints.",
+    "DeepSeek exposes a moving model alias rather than a dated snapshot in this protocol.",
+    "The full system includes a deterministic authorization and output gate."
+  ]
+}

@@ -4,16 +4,16 @@ Auditable red-blue evaluation and layered defense for prompt injection and
 retrieval manipulation in retrieval-augmented generation systems.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![Model](https://img.shields.io/badge/Model-GPT--5%20mini-3D8DFF)
-![Benchmark](https://img.shields.io/badge/Benchmark-SafeRAG%20ACL%202025-0B6E69)
+![Models](https://img.shields.io/badge/Models-GPT--5%20mini%20%7C%20DeepSeek-3D8DFF)
+![Benchmarks](https://img.shields.io/badge/Benchmarks-SafeRAG%20%7C%20TAB%20%7C%20Tensor%20Trust-0B6E69)
 ![Status](https://img.shields.io/badge/Status-Research%20Prototype-orange)
 
-The primary empirical release is SafeRAG-only: it uses the author-released,
-peer-reviewed benchmark and contains no author-generated evaluation corpus.
-Alongside that frozen real-model study, the repository includes deterministic
-prototype controls for privacy redaction, tenant isolation, least-privilege
-tools, human approval, and secret-safe auditing. These controls are functional
-validation artifacts, not additional benchmark evidence.
+The empirical release uses author-released, peer-reviewed benchmarks and contains
+no author-generated evaluation corpus. SafeRAG and Tensor Trust are real-model
+studies; TAB is an offline detector evaluation against human span annotations.
+Deterministic prototype controls for tenant isolation, least-privilege tools,
+approval, and secret-safe auditing remain functional validation artifacts rather
+than population-level benchmark evidence.
 
 ## Research Question
 
@@ -108,6 +108,33 @@ and organizations. NER broadens coverage but falsely redacts 10.7% of document
 characters. This is an offline span evaluation against human annotations, not an
 LLM generation study or a production privacy guarantee.
 
+## Direct Injection and Secret Extraction
+
+The fixed Tensor Trust pilot uses 100 human-player attack cases from the
+[ICLR 2024 benchmark](https://openreview.net/forum?id=fsW7wJGLBd): 50 prompt
+hijacking and 50 secret-extraction cases. Each case was run with both attack and
+valid-access inputs across three paired systems using `deepseek-v4-flash`, for
+600 successful real API calls.
+
+| System | Raw attack success | Final attack success | Valid-access success |
+|---|---:|---:|---:|
+| Baseline | 57% | 57% | 61% |
+| Context boundary | 35% | 35% | **87%** |
+| Full RAGShield | 36% | **0%** | 80% |
+
+Compared with baseline, the context boundary reduced attack success by 22
+percentage points (95% paired bootstrap CI: -34 to -10; exact McNemar
+`p = 0.00094`). Full RAGShield reduced final attack success by 57 points (95%
+CI: -67 to -47; `p < 0.00000001`). The full model output still showed 36% raw
+attack success; the deterministic authorization and secret-output gate produced
+the final 0%. This is evidence for layered controls, not a claim that prompting
+alone solves injection.
+
+The run consumed 210,466 tokens and has 600/600 unique response IDs. Estimated
+cache-miss API cost was `$0.0328`. The frozen sample, protocol, aggregate results,
+and secret-free public audit are committed; raw prompts and generations remain
+local and Git-ignored.
+
 ## Controlled Security Extensions
 
 The following controls compose into a separate, deterministic security path:
@@ -166,6 +193,9 @@ no explicit redistribution license.
 | [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and judge-consistency metadata |
 | [TAB offline report](reports/tab_offline_report.md) | External human-annotated PII span metrics and privacy-utility trade-off |
 | [TAB result JSON](reports/tab_offline_results.json) | Machine-readable aggregate detector results |
+| [Tensor Trust report](reports/tensor_trust_deepseek_report.md) | Fixed-sample direct injection, extraction, utility, and paired effects |
+| [Tensor Trust result JSON](reports/tensor_trust_deepseek_results.json) | Machine-readable aggregate results and cost evidence |
+| [Tensor Trust public audit](reports/tensor_trust_deepseek_audit.json) | Secret-free response IDs, prompt hashes, usage, and latency |
 
 ## Reproduce
 
@@ -193,6 +223,19 @@ Run the complete offline TAB test split without an API key:
 ```powershell
 $env:PYTHONPATH = "src"
 py -m ragshield.evaluation.tab_study --phase report
+```
+
+Validate the frozen Tensor Trust protocol without an API call:
+
+```powershell
+$env:PYTHONPATH = "src"
+py -m ragshield.evaluation.tensor_trust_study --phase dry-run
+```
+
+Run or resume the paid Tensor Trust study after setting `DEEPSEEK_API_KEY`:
+
+```powershell
+py -m ragshield.evaluation.tensor_trust_study --phase all --workers 32
 ```
 
 Fetch the pinned SafeRAG data directly from the authors and validate its hashes:
@@ -243,14 +286,17 @@ Supported by the current evidence:
   audit controls enforce their documented behavior on controlled fixtures.
 - On TAB's full official test split, the fixed NER detector achieved 0.610
   character F1 and exposed substantial recall and over-redaction limitations.
+- On the frozen 100-case Tensor Trust sample, the context boundary reduced
+  attack success from 57% to 35%, and the full output gate reduced the final
+  rate to 0% while retaining 80% valid-access success.
 
 Not supported by the current evidence:
 
 - Production-grade security against arbitrary or adaptive attacks.
 - Independent judge validity before blind human annotation is completed.
 - Generalization across model families, retrievers, languages, or repeated runs.
-- Population-level or real-model effectiveness claims for PII leakage,
-  cross-tenant isolation, or tool misuse.
+- Population-level or real-model effectiveness claims for cross-tenant
+  isolation or tool misuse.
 - Differential privacy, federated learning, or homomorphic encryption.
 
 ## Limitations and Next Experiments
@@ -260,6 +306,8 @@ Not supported by the current evidence:
   requires independent human annotation.
 - SafeRAG uses a single generation per condition; repeated stochastic runs and
   multiple model families are needed for stronger inference.
+- Tensor Trust is a fixed 100-case pilot rather than the complete benchmark,
+  uses a moving DeepSeek alias, and detects verbatim secret extraction only.
 - The retriever is BM25/lexical. Embedding retrievers and rerankers should be
   evaluated under the same paired protocol.
 - Utility F1 is a strict option-level proxy and remained inconclusive. Human

@@ -365,6 +365,20 @@ def build_summary(
             "raw_attack_success": _rate(raw_attacks),
             "utility_success": _rate(utility),
             "output_block_rate": _rate([bool(row["output_findings"]) for row in system_rows]),
+            "attack_output_intervention": _rate(
+                [
+                    bool(row["output_findings"])
+                    for row in system_rows
+                    if row["input_mode"] == "attack"
+                ]
+            ),
+            "utility_output_intervention": _rate(
+                [
+                    bool(row["output_findings"])
+                    for row in system_rows
+                    if row["input_mode"] == "utility"
+                ]
+            ),
             "mean_latency_ms": round(mean(row["latency_ms"] for row in system_rows), 3)
             if system_rows
             else 0.0,
@@ -448,14 +462,17 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
         "",
         "## Overall Results",
         "",
-        "| System | Attack Success | Utility Success | Output Block Rate |",
+        "| System | Raw Attack Success | Final Attack Success (95% CI) | Utility Success (95% CI) |",
         "|---|---:|---:|---:|",
     ]
     for system in SYSTEMS:
         row = summary["overall"][system]
         lines.append(
-            f"| {system} | {row['attack_success']['rate']:.1%} | "
-            f"{row['utility_success']['rate']:.1%} | {row['output_block_rate']['rate']:.1%} |"
+            f"| {system} | {row['raw_attack_success']['rate']:.1%} | "
+            f"{row['attack_success']['rate']:.1%} "
+            f"({row['attack_success']['ci_low']:.1%}-{row['attack_success']['ci_high']:.1%}) | "
+            f"{row['utility_success']['rate']:.1%} "
+            f"({row['utility_success']['ci_low']:.1%}-{row['utility_success']['ci_high']:.1%}) |"
         )
     lines.extend(["", "## Results by Task", ""])
     lines.extend(
@@ -471,6 +488,39 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
                 f"| {task} | {system} | {row['attack_success']['rate']:.1%} | "
                 f"{row['utility_success']['rate']:.1%} |"
             )
+    lines.extend(
+        [
+            "",
+            "## Paired Effects versus Baseline",
+            "",
+            "| System | Attack difference (95% bootstrap CI) | Exact McNemar p | Utility difference (95% bootstrap CI) |",
+            "|---|---:|---:|---:|",
+        ]
+    )
+    for system in SYSTEMS[1:]:
+        effect = summary["paired_effects"][system]
+        attack = effect["attack_difference"]
+        utility = effect["utility_difference"]
+        p_value = effect["attack_mcnemar"]["p_value"]
+        p_display = "<0.00000001" if p_value == 0 else f"{p_value:.8f}"
+        lines.append(
+            f"| {system} | {attack['difference']:+.1%} "
+            f"({attack['ci_low']:+.1%} to {attack['ci_high']:+.1%}) | "
+            f"{p_display} | {utility['difference']:+.1%} "
+            f"({utility['ci_low']:+.1%} to {utility['ci_high']:+.1%}) |"
+        )
+    full = summary["overall"]["ragshield_full"]
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            "- The context boundary alone reduced attack success from 57% to 35% while increasing utility from 61% to 87%.",
+            "- The full system's model output still had 36% raw attack success. Its deterministic authorization and secret-output gate reduced final attack success to 0%.",
+            f"- The full gate intervened on {full['attack_output_intervention']['rate']:.1%} of attack inputs and {full['utility_output_intervention']['rate']:.1%} of utility inputs.",
+            "- This is evidence for layered system controls on the fixed sample, not evidence that prompt instructions alone eliminate attacks.",
+        ]
+    )
     lines.extend(
         [
             "",
