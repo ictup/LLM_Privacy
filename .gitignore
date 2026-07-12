@@ -10,4 +10,5 @@ dist/
 *.egg-info/
 reports/*.jsonl
 reports/*.csv
+reports/*_summary.json
 data/generated/
