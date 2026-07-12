@@ -1,4 +1,4 @@
-"""Regex-based fake PII and secret redaction for synthetic benchmark data."""
+"""Regex-based redaction for explicitly marked sensitive-pattern test strings."""
 
 from __future__ import annotations
 

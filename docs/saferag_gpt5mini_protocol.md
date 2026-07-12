@@ -72,10 +72,9 @@ frozen developer instruction may differ.
 1. `baseline`: no context screening, boundary, redaction, or output validation.
 2. `context_boundary`: wraps all retrieved text as untrusted and applies the frozen
    untrusted-evidence instruction.
-3. `ragshield_full`: label-free risk screening, conflict-preserving deduplication, fake
-   PII/secret redaction, untrusted-context wrapping, hardened generation instruction,
-   policy-aware output validation, and a disabled-by-default tool boundary because
-   SafeRAG contains no tool calls.
+3. `ragshield_full`: label-free risk screening, conflict-preserving deduplication,
+   sensitive-pattern redaction, untrusted-context wrapping, hardened generation
+   instruction, and policy-aware output validation.
 
 Near-duplicates with differing numeric or named-entity markers are retained and explicitly
 marked as potentially conflicting evidence. The defense never receives SafeRAG's clean or
@@ -152,14 +151,11 @@ powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 
 powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 `
   -Phase all -Split all
 
-# SafeRAG plus the 612-call controlled privacy/tool canary study
-powershell -ExecutionPolicy Bypass -File scripts\run_gpt5mini_interview_suite.ps1
 ```
 
 SafeRAG requires 2,322 calls for all 387 cases: 1,161 generations and 1,161 judgments.
-The complete interview suite adds 612 controlled-canary generations for 2,934 calls total.
-The paid runners require explicit `RUN` confirmation and hidden API-key entry. They resume
-from local JSONL logs and never write the key to source, reports, or command arguments.
+The paid runner requires explicit `RUN` confirmation and hidden API-key entry. It resumes
+from local JSONL logs and never writes the key to source, reports, or command arguments.
 The default runner uses 32 concurrent workers with five retry attempts, server-provided
 `Retry-After` handling, and exponential backoff. Concurrency affects wall-clock time only;
 the frozen prompts, cases, model snapshot, endpoints, and scoring remain unchanged.

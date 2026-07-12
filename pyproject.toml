@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ragshield"
 version = "0.1.0"
-description = "Defensive red-blue evaluation prototype for RAG privacy and prompt-injection risk."
+description = "Auditable red-blue evaluation prototype for adversarial retrieval in RAG systems."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Haojie Li" }]

@@ -50,11 +50,10 @@ class SystemSpec:
     context_screener: bool
     pii_redaction: bool
     output_validator: bool
-    tool_policy_gate: bool
 
 
 SYSTEM_SPECS = (
-    SystemSpec("baseline", BASELINE_INSTRUCTIONS, False, False, False, False, False),
+    SystemSpec("baseline", BASELINE_INSTRUCTIONS, False, False, False, False),
     SystemSpec(
         "context_boundary",
         CONTEXT_BOUNDARY_INSTRUCTIONS,
@@ -62,12 +61,10 @@ SYSTEM_SPECS = (
         False,
         False,
         False,
-        False,
     ),
     SystemSpec(
         "ragshield_full",
         FULL_DEFENSE_INSTRUCTIONS,
-        True,
         True,
         True,
         True,
@@ -210,7 +207,6 @@ def prepare_system_input(
             "pii_redaction": spec.pii_redaction,
             "context_boundary": spec.context_boundary,
             "output_validator": spec.output_validator,
-            "tool_policy_gate": spec.tool_policy_gate,
         },
     )
 

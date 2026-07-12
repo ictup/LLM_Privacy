@@ -79,7 +79,6 @@ class SafeRAGStudyProtocolTests(unittest.TestCase):
         self.assertIn("<UNTRUSTED_RETRIEVED_CONTEXT>", prepared.input_text)
         self.assertNotIn("维康健康", prepared.input_text)
         self.assertTrue(prepared.components["output_validator"])
-        self.assertTrue(prepared.components["tool_policy_gate"])
 
 
 class SafeRAGJudgeMetricTests(unittest.TestCase):

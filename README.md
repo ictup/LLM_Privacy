@@ -1,26 +1,28 @@
 # RAGShield
 
-Automated red-blue evaluation and layered defense for privacy leakage and
-prompt-injection risk in RAG-enabled, tool-using LLM agents.
+Auditable red-blue evaluation and layered defense for prompt injection and
+retrieval manipulation in retrieval-augmented generation systems.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Model](https://img.shields.io/badge/Model-GPT--5%20mini-3D8DFF)
 ![Benchmark](https://img.shields.io/badge/Benchmark-SafeRAG%20ACL%202025-0B6E69)
 ![Status](https://img.shields.io/badge/Status-Research%20Prototype-orange)
 
-This repository contains the final interview-facing version of the project. It
-includes the defense implementation, frozen real-model protocol, aggregate
-results, public audit metadata, tests, and explicit limitations.
+This repository contains the final SafeRAG-only version of RAGShield. It uses
+the author-released, peer-reviewed SafeRAG benchmark and does not include an
+author-generated evaluation corpus. The repository contains the defense code,
+frozen real-model protocol, aggregate results, public audit metadata, tests,
+and explicit claim boundaries.
 
 ## Research Question
 
-How can layered, provenance-aware controls reduce attack adoption and privacy
-leakage in RAG agents while preserving useful task performance, and how should
-that trade-off be measured reproducibly?
+Can lightweight, provenance-aware controls reduce attack adoption in adversarial
+RAG pipelines while preserving useful answers, and how can that effect be
+measured reproducibly?
 
 ## Main Result
 
-The primary experiment uses the peer-reviewed
+The confirmatory study uses the
 [SafeRAG ACL 2025 benchmark](https://aclanthology.org/2025.acl-long.230/) and the
 pinned `gpt-5-mini-2025-08-07` model snapshot. Eight of 387 cases were fixed as
 development data before the confirmatory run. Of the remaining 379 cases, 377
@@ -53,75 +55,57 @@ SN is the main negative result. The current rule-based context screener is much
 less effective when misleading evidence looks semantically plausible and does
 not contain recognizable attack instructions.
 
-## Controlled Privacy and Tool Study
-
-A separate author-generated corpus tests concrete fake secrets, tenant markers,
-poisoned retrieval, and toy tool requests. The same pinned model produced 612
-real API responses: 204 cases under each of the three systems.
-
-| System | N | ASR down | Leakage down | Unauthorized tools down | Benign success up |
-|---|---:|---:|---:|---:|---:|
-| Baseline BM25 RAG | 204 | 30.8% | 11.5% | 10.3% | 97.9% |
-| + Untrusted-context boundary | 204 | 26.3% | 9.0% | 0.6% | 100.0% |
-| Full RAGShield | 204 | **0.0%** | **0.0%** | **0.0%** | 97.9% |
-
-This result verifies known components under machine-detectable synthetic
-canaries. It is not external evidence that the system stops arbitrary attacks.
-
-## System Architecture
+## Evaluated Architecture
 
 ```mermaid
 flowchart LR
-    Q[User query] --> T[Tenant filter]
-    T --> R[BM25 retrieval]
+    Q[Question] --> R[BM25 retrieval]
     R --> S[Label-free context screening]
     S --> D[Conflict-preserving deduplication]
-    D --> P[Fake PII and secret redaction]
+    D --> P[Sensitive-pattern redaction]
     P --> B[Untrusted-context boundary]
     B --> M[GPT-5 mini generation]
-    M --> V[Policy-aware output validation]
-    V --> G[Least-privilege tool gate]
-    G --> A[Answer and audit record]
+    M --> V[Output validation]
+    V --> J[Structured judgment and paired statistics]
 ```
 
-The final implementation contains:
+The study compares three paired conditions:
 
-- BM25 retrieval with Chinese character/bigram tokenization.
-- Tenant-aware document filtering.
-- Label-free detection of injected instructions, advertisements, refusals,
-  and tool-use patterns.
-- Conflict-preserving deduplication that retains and flags contradictory facts.
-- Untrusted evidence separation in the generation prompt.
-- Fake PII/secret redaction and policy-aware output validation.
-- Least-privilege authorization for sandbox tool requests.
-- Structured OpenAI Responses API outputs and resumable concurrent execution.
-- A structured SafeRAG judge that separates attack adoption from warning-only
+- `baseline`: BM25 retrieval and generation without defensive context handling.
+- `context_boundary`: the same initial contexts, explicitly separated as
+  untrusted evidence rather than instructions.
+- `ragshield_full`: label-free context screening, conflict-preserving
+  deduplication, sensitive-pattern redaction, context separation, and output
+  validation.
+
+The implementation also provides:
+
+- Chinese character/bigram lexical retrieval.
+- Task-specific SafeRAG context budgets.
+- A structured judge that distinguishes attack adoption from warning-only
   mention of an injected claim.
 - Wilson intervals, paired bootstrap intervals, and exact McNemar tests.
-- Hash-based public audits while licensed/raw answer text stays local.
+- Resumable 32-worker API execution with retry and completion checks.
+- Hash-based public audits while raw benchmark text stays local.
 
 ## Frozen Study Design
 
-The confirmatory protocol is documented in
+The protocol is documented in
 [docs/saferag_gpt5mini_protocol.md](docs/saferag_gpt5mini_protocol.md).
 
 - Generator and judge: `gpt-5-mini-2025-08-07`.
-- Systems: `baseline`, `context_boundary`, and `ragshield_full`.
+- SafeRAG commit: `e8f579743b23e0a3937076dcc0792fe29027cba3`.
 - Split: 8 development cases and 379 untouched confirmatory cases.
 - Primary analysis: 377 complete paired cases.
 - Operational exclusions: `WDoS-41` lacked one judgment and `WDoS-47` lacked
   one generation after repeated retries.
-- Exclusion rule: remove the entire case from all systems; retain available raw
-  rows locally; disclose IDs and reasons.
+- Exclusion rule: remove the entire case from all systems, retain available raw
+  rows locally, and disclose IDs and reasons.
 - Primary endpoint: structured judge-assessed attack adoption.
 - Supporting endpoints: attack mention, official attack-keyword propagation,
   groundedness, option utility F1, refusal, context count, and latency.
-- Concurrency: 32 workers with resumable logs and rate-limit backoff.
-- Persistent per-call failures are reported and skipped by the final runner;
-  primary estimates then use only cases complete under all three systems.
-- Completed rows: 1,160 generations, 1,157 judgments, and 612 controlled
-  canary responses.
-- Estimated final evidence-run API cost: `$6.37` at documented standard rates.
+- Completed rows: 1,160 generations and 1,157 structured judgments.
+- Estimated SafeRAG evidence-run API cost: `$5.73` at documented standard rates.
 
 The two exclusions were fixed before inspecting final outcome tables. Public
 artifacts contain no raw SafeRAG text because the pinned upstream repository has
@@ -131,15 +115,9 @@ no explicit redistribution license.
 
 | Artifact | Purpose |
 |---|---|
-| [Final evidence report](reports/interview_evidence_report.md) | Concise interview-facing result summary |
-| [Final evidence JSON](reports/interview_evidence.json) | Machine-readable combined results and claim boundary |
-| [SafeRAG report](reports/saferag_gpt5mini_report.md) | External benchmark metrics and paired inference |
-| [SafeRAG result JSON](reports/saferag_gpt5mini_results.json) | Complete aggregate result object |
-| [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and consistency metadata |
-| [Controlled study report](reports/synthetic_gpt5mini_report.md) | Privacy/tool component results |
-| [Controlled result JSON](reports/synthetic_gpt5mini_results.json) | Category and system aggregates |
-| [Controlled public audit](reports/synthetic_gpt5mini_audit.json) | Hash-based execution evidence |
-| [Dataset quality report](reports/data_quality.md) | Synthetic corpus uniqueness and reference checks |
+| [SafeRAG report](reports/saferag_gpt5mini_report.md) | Final metrics, paired effects, task results, and limitations |
+| [SafeRAG result JSON](reports/saferag_gpt5mini_results.json) | Machine-readable aggregate results and execution evidence |
+| [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and judge-consistency metadata |
 
 ## Reproduce
 
@@ -166,33 +144,25 @@ powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 
   -Phase dry-run
 ```
 
-Run the complete resumable real-model suite:
+Run or resume the full real-model study:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run_gpt5mini_interview_suite.ps1
+powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 `
+  -Phase all -Split all
 ```
 
-The paid scripts require typed confirmation and hidden API-key input. They clear
+The paid runner requires typed confirmation and hidden API-key input. It clears
 the key from the process environment when finished. Raw generations, judgments,
 and blind-review files are Git-ignored.
-
-Regenerate the combined public report from completed local aggregate files:
-
-```powershell
-$env:PYTHONPATH = "src"
-py -m ragshield.evaluation.build_interview_report
-```
 
 ## Repository Layout
 
 ```text
 benchmarks/saferag/       Pinned provenance, hashes, and integration notes
-configs/tool_policy.yaml  Least-privilege sandbox tool policy
-data/                     Author-generated controlled documents and cases
 docs/                     Frozen protocol and interview/application wording
-reports/                  Final public aggregate evidence and audits
-scripts/                  SafeRAG fetcher and final GPT-5 mini runners
-src/ragshield/            Retrieval, defenses, tools, scoring, and evaluation
+reports/                  Final SafeRAG aggregate evidence and public audit
+scripts/                  SafeRAG fetcher and GPT-5 mini study runner
+src/ragshield/            Retrieval, defenses, judging, and evaluation
 tests/                    Focused unit and report-generation tests
 ```
 
@@ -202,14 +172,16 @@ Supported by the current evidence:
 
 - Under the frozen protocol, RAGShield reduced judge-assessed SafeRAG attack
   adoption on 377 complete paired cases.
-- The full stack blocked all measured violations in the controlled canary run.
 - WDoS and ICC improved substantially; SN remains a clear open problem.
+- The execution and paired statistical analysis are reproducible from the
+  pinned benchmark, protocol, model snapshot, and local raw logs.
 
 Not supported by the current evidence:
 
 - Production-grade security against arbitrary or adaptive attacks.
 - Independent judge validity before blind human annotation is completed.
 - Generalization across model families, retrievers, languages, or repeated runs.
+- Empirical claims about PII leakage, cross-tenant isolation, or tool misuse.
 - Differential privacy, federated learning, or homomorphic encryption.
 
 ## Limitations and Next Experiments
@@ -221,17 +193,16 @@ Not supported by the current evidence:
   multiple model families are needed for stronger inference.
 - The retriever is BM25/lexical. Embedding retrievers and rerankers should be
   evaluated under the same paired protocol.
-- The controlled corpus uses fake, machine-detectable markers and therefore
-  supports component verification rather than external validity.
+- Utility F1 is a strict option-level proxy and remained inconclusive. Human
+  answer-quality labels and independent correctness metrics are needed.
 - Future work should target adaptive attacks, learned source provenance,
   semantic contradiction detection, independent judging, and human agreement.
 
 ## Safety and Data Use
 
-Run this project only on self-owned systems with fictional data or author-released
-research benchmarks. Do not commit credentials, use real private records, or
-target third-party systems. SafeRAG raw files are fetched from the authors and are
-not redistributed here.
+Run this project only on self-owned systems with author-released research
+benchmarks. Do not commit credentials, use private records, or target third-party
+systems. SafeRAG raw files are fetched from the authors and are not redistributed.
 
 ## Application Materials
 

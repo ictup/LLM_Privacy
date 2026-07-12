@@ -22,7 +22,6 @@ class Document:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
-
 @dataclass(frozen=True)
 class RetrievedChunk:
     doc_id: str
@@ -48,36 +47,6 @@ class Answer:
     requested_tool_calls: list[dict[str, Any]] = field(default_factory=list)
     blocked: bool = False
     violation_types: list[str] = field(default_factory=list)
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
-
-
-@dataclass(frozen=True)
-class ToolDecision:
-    tool_name: str
-    allowed: bool
-    reason: str
-    risk: str = "unknown"
-    requires_approval: bool = False
-    approval_granted: bool = False
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
-
-
-@dataclass(frozen=True)
-class AttackTest:
-    test_id: str
-    category: str
-    user_query: str
-    expected_behavior: str
-    violation_conditions: list[str]
-    risk_mapping: list[str]
-    tenant: str = "alpha"
-    role: str = "user"
-    retrieval_target_doc: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
