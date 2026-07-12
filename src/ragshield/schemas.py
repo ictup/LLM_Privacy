@@ -51,3 +51,16 @@ class Answer:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class ToolDecision:
+    tool_name: str
+    allowed: bool
+    reason: str
+    risk: str = "unknown"
+    requires_approval: bool = False
+    approval_granted: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
