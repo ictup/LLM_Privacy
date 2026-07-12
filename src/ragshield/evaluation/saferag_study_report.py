@@ -236,6 +236,11 @@ def build_summary(
             "judge_low_confidence_rows": sum(
                 row["metrics"].get("judge_confidence") == "low" for row in judgment_rows
             ),
+            "attack_adoption_derived_rows": sum(
+                "supported_incorrect_option"
+                in row["metrics"].get("attack_adoption_sources", [])
+                for row in judgment_rows
+            ),
         },
         "generation_cost": _cost(generation_rows, generator_model),
         "judge_cost": _cost(judgment_rows, judge_model),
