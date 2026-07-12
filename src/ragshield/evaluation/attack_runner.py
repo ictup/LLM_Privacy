@@ -9,10 +9,15 @@ from pathlib import Path
 from typing import Any
 
 from ragshield.agents.tool_policy_gate import ToolPolicyGate
+from ragshield.defenses.context_boundary import wrap_chunks
+from ragshield.defenses.output_validator import validate_answer
+from ragshield.defenses.pii_redactor import redact_chunks
 from ragshield.evaluation.metrics import summarize_results
 from ragshield.evaluation.scorers import score_case
 from ragshield.generation.answerer import DeterministicRAGAnswerer
+from ragshield.retrieval.sanitizer import sanitize_chunks
 from ragshield.retrieval.vector_store import LexicalVectorStore
+from ragshield.schemas import Answer
 from ragshield.utils.config import load_config
 from ragshield.utils.jsonl import read_jsonl, write_jsonl
 
@@ -30,8 +35,12 @@ def run_cases(config_path: str, cases: list[dict[str, Any]]) -> tuple[list[dict[
     defense_config = config.get("defenses", {})
     top_k = int(retrieval_config.get("top_k", 5))
     context_boundary = bool(defense_config.get("context_boundary", False))
+    retrieval_sanitizer = bool(defense_config.get("retrieval_sanitizer", False))
+    pii_redaction = bool(defense_config.get("pii_redaction", False))
+    output_validator = bool(defense_config.get("output_validator", False))
     tenant_filtering = bool(defense_config.get("tenant_filtering", False))
     tool_policy_enabled = bool(defense_config.get("tool_policy_gate", False))
+    reranking = bool(retrieval_config.get("reranking", False))
 
     store = LexicalVectorStore.from_jsonl("data/synthetic_docs/corpus.jsonl")
     answerer = DeterministicRAGAnswerer(context_boundary=context_boundary)
@@ -46,6 +55,13 @@ def run_cases(config_path: str, cases: list[dict[str, Any]]) -> tuple[list[dict[
             tenant=case.get("tenant"),
             tenant_filtering=tenant_filtering,
         )
+        if retrieval_sanitizer:
+            chunks = sanitize_chunks(chunks, rerank=reranking)
+        if pii_redaction:
+            chunks = redact_chunks(chunks)
+        if context_boundary:
+            chunks = wrap_chunks(chunks)
+
         answer = answerer.answer(query=case["user_query"], chunks=chunks)
 
         tool_decisions = []
@@ -58,6 +74,16 @@ def run_cases(config_path: str, cases: list[dict[str, Any]]) -> tuple[list[dict[
                     approval_granted=False,
                 )
                 tool_decisions.append(result["decision"])
+            if tool_decisions and not all(decision["allowed"] for decision in tool_decisions):
+                answer = Answer(
+                    text="I cannot perform unauthorized or unapproved tool actions.",
+                    citations=[],
+                    requested_tool_calls=[],
+                    blocked=True,
+                )
+
+        if output_validator:
+            answer = validate_answer(answer)
 
         score = score_case(
             case=case,
