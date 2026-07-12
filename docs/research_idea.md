@@ -21,10 +21,11 @@ The proposed method is a controlled red-blue evaluation pipeline:
 3. Implement a baseline RAG-agent system with retrieval, citations, and sandbox tools.
 4. Add defense layers: context separation, retrieval sanitization, fake PII/secret redaction, output validation, least-privilege tool gating, tenant filtering, and audit traces.
 5. Run ablation experiments to measure security-utility trade-offs under attack success rate, leakage rate, unauthorized tool-call rate, poisoned retrieval influence, benign QA success, and latency overhead.
+6. Validate external generalization with pinned peer-reviewed benchmarks, beginning with SafeRAG, while preserving upstream task definitions, provenance, and native retrieval metrics.
 
 ## Expected Contribution
 
-The expected contribution is a reproducible security evaluation artifact for RAG agents. It demonstrates how controlled synthetic benchmarks can expose vulnerabilities, compare defense layers, and produce audit traces for failure analysis. The artifact also identifies open research problems around source trust, tenant-aware retrieval, paraphrased leakage detection, and policy verification for tool-using agents.
+The expected contribution is a reproducible security evaluation artifact for RAG agents. It combines controlled synthetic diagnostics with peer-reviewed external benchmarks to expose vulnerabilities, compare defense layers, and produce audit traces for failure analysis. The artifact also identifies open research problems around source trust, tenant-aware retrieval, paraphrased leakage detection, and policy verification for tool-using agents.
 
 ## Fit to University of Turku Position
 
@@ -32,4 +33,4 @@ The project connects LLM privacy preservation and security hardening with automa
 
 ## Limitations and Next Steps
 
-The current artifact is a deterministic offline prototype using varied but author-generated synthetic data. Future work should test public privacy/security datasets, stronger retrieval models, multiple open and hosted LLMs, LLM-backed evaluators, multilingual records, adaptive attackers, and formal policy verification for multi-step tool use.
+The current artifact combines a deterministic synthetic benchmark with an offline SafeRAG retrieval evaluation. The SafeRAG trusted-source condition uses benchmark provenance labels and should be interpreted as an oracle-like upper bound. Future work should reproduce the official embedding, reranking, generation, and QuestEval settings; test multiple open and hosted LLMs; add PrivacyLens and AgentDojo; and report repeated runs with confidence intervals.

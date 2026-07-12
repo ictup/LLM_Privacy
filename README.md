@@ -8,9 +8,10 @@ RAG-enabled and tool-using LLM agents.
 ![Status](https://img.shields.io/badge/Status-Research%20Prototype-orange)
 ![Focus](https://img.shields.io/badge/Focus-LLM%20Security%20%26%20Privacy-purple)
 
-This repository is a defensive research prototype. It uses only synthetic data,
-fake PII, fake credentials, toy tools, and local evaluation logic. It must not be
-used to attack third-party systems or extract real sensitive information.
+This repository is a defensive research prototype. It uses controlled synthetic data
+and pinned author-released research benchmarks, with fake PII, fake credentials, toy
+tools, and local evaluation logic. It must not be used to attack third-party systems or
+extract real sensitive information.
 
 ## Research Question
 
@@ -39,7 +40,29 @@ The defense stack includes:
 - Least-privilege tool-call authorization.
 - Audit-friendly JSONL traces.
 
-## Current Results
+## Peer-Reviewed Benchmark Evaluation
+
+RAGShield now includes an adapter for [SafeRAG](https://aclanthology.org/2025.acl-long.230/),
+an ACL 2025 Long Paper benchmark containing 387 Chinese RAG security cases across soft
+advertising (SA), inter-context conflict (ICC), silver noise (SN), and white denial of
+service (WDoS).
+
+| System | Retrieval Accuracy ↑ | Gold Hit ↑ | Attack Exposure ↓ | Attack Keyword Cases ↓ |
+|---|---:|---:|---:|---:|
+| Baseline lexical RAG | 52.9% | 95.3% | 89.1% | 86.4% |
+| RAGShield trusted-source retrieval | 96.5% | 100.0% | 0.0% | 0.0% |
+
+This is an offline architecture-level evaluation, not a reproduction of SafeRAG's
+LLM-based QuestEval table. The defended condition uses clean/attack provenance supplied
+by the benchmark, so it is an oracle-like trusted-source upper bound. Attack Keyword
+Cases uses a top-two extractive response proxy and is not an LLM attack success rate.
+See [the full SafeRAG report](reports/saferag_report.md) and
+[integration notes](benchmarks/saferag/README.md).
+
+The upstream repository has no explicit redistribution license at the pinned commit.
+Raw files are therefore downloaded directly from the authors and excluded from this repo.
+
+## Controlled Synthetic Results
 
 The latest checked-in run evaluates 132 varied adversarial tests, 24 mixed benign-plus-
 adversarial tests, and 48 benign QA tests against 240 fictional enterprise documents.
@@ -77,8 +100,10 @@ All organizations, people, records, identifiers, credentials, and incidents are 
 
 ```text
 configs/                  Runtime and tool-policy configuration
+benchmarks/               External benchmark manifests and integration notes
 data/
   attacks/                Synthetic adversarial test cases
+  external/               Downloaded, Git-ignored benchmark data
   eval_sets/              Benign and mixed QA test sets
   synthetic_docs/         Synthetic documents with metadata
 src/ragshield/
@@ -90,6 +115,7 @@ src/ragshield/
   retrieval/              Vector-store-like lexical retrieval
   tracing/                JSONL audit logger
 reports/                  Generated experiment outputs
+scripts/                  Reproducible external benchmark fetchers
 tests/                    Unit tests
 ```
 
@@ -105,6 +131,15 @@ python -m unittest discover -s tests
 If you do not install the package, set `PYTHONPATH=src` before running modules.
 
 ## Reproduce the Benchmark
+
+SafeRAG architecture evaluation:
+
+```bash
+python scripts/fetch_saferag.py
+python -m ragshield.evaluation.run_saferag
+```
+
+Controlled synthetic benchmark:
 
 ```bash
 python -m ragshield.ingestion.build_corpus --config configs/baseline.yaml
@@ -125,6 +160,7 @@ python -m unittest discover -s tests
 5. Add defense modules and tests.
 6. Run baseline-vs-defense ablations and generate reports.
 7. Package results for GitHub, CV, and a one-page research idea.
+8. Integrate pinned peer-reviewed benchmarks with provenance and integrity checks.
 
 ## Application Materials
 
@@ -133,8 +169,9 @@ python -m unittest discover -s tests
 
 ## Safety Boundary
 
-Only run this project on self-owned local systems with synthetic data. Do not use
-real credentials, real private data, production services, or third-party systems.
+Only run this project on self-owned local systems with synthetic or author-released
+research data, following the source terms and without unauthorized redistribution. Do not
+use real credentials, real private data, production services, or third-party systems.
 Do not publish payloads intended for credential theft, malware, unauthorized
 access, or real data exfiltration.
 

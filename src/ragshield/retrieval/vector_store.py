@@ -12,10 +12,15 @@ from ragshield.utils.jsonl import read_jsonl
 
 
 TOKEN_RE = re.compile(r"[a-zA-Z0-9_+-]+")
+CJK_SEQUENCE_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]+")
 
 
 def tokenize(text: str) -> list[str]:
-    return [match.group(0).lower() for match in TOKEN_RE.finditer(text)]
+    tokens = [match.group(0).lower() for match in TOKEN_RE.finditer(text)]
+    for sequence in CJK_SEQUENCE_RE.findall(text):
+        tokens.extend(sequence)
+        tokens.extend(sequence[index : index + 2] for index in range(len(sequence) - 1))
+    return tokens
 
 
 def load_documents(path: str | Path) -> list[Document]:

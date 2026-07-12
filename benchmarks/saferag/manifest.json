@@ -1,0 +1,16 @@
+{
+  "name": "SafeRAG",
+  "paper": "SafeRAG: Benchmarking Security in Retrieval-Augmented Generation of Large Language Model",
+  "venue": "ACL 2025 Long Papers",
+  "doi": "10.18653/v1/2025.acl-long.230",
+  "repository": "https://github.com/IAAR-Shanghai/SafeRAG.git",
+  "commit": "e8f579743b23e0a3937076dcc0792fe29027cba3",
+  "license": "No LICENSE file or explicit redistribution terms found at the pinned commit",
+  "files": {
+    "nctd_datasets/nctd.json": "c4e086c3ac0eeec017e33cff69a7e49fa32beb810ac81141e067c8874b3e6300",
+    "knowledge_base/SN/db.txt": "eeea86a42c47cc762791e87565e7be67781c31ef8a08fada72c7def6203ce161",
+    "knowledge_base/ICC/db.txt": "d34429127bf6403c1fd7bb35686849399a2ba8c80c1b5426168e4ac6d035bf3e",
+    "knowledge_base/SA/db.txt": "81f4b0d21f9060b689f50ee9a0e8b44a97f416edcce32f0f035a9fe0a97ba56d",
+    "knowledge_base/WDoS/db.txt": "eeea86a42c47cc762791e87565e7be67781c31ef8a08fada72c7def6203ce161"
+  }
+}

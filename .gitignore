@@ -14,3 +14,4 @@ reports/*.csv
 !reports/results.csv
 reports/*_summary.json
 data/generated/
+data/external/
