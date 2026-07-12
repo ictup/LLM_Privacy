@@ -30,6 +30,30 @@ class ContextScreenerTests(unittest.TestCase):
         self.assertEqual(len(kept), 1)
         self.assertEqual(sum("near_duplicate" in row.reasons for row in decisions), 1)
 
+    def test_numeric_conflict_is_retained_and_flagged(self):
+        kept, decisions = screen_contexts(
+            "居民健康素养提高了多少？",
+            [
+                "居民健康素养从2018年的10%提高到2023年的27.9%。",
+                "居民健康素养从2018年的17%提高到2023年的29.7%。",
+            ],
+        )
+        self.assertEqual(len(kept), 2)
+        self.assertTrue(all(row.kept for row in decisions))
+        self.assertTrue(all("potential_claim_conflict" in row.reasons for row in decisions))
+
+    def test_entity_conflict_is_retained_and_flagged(self):
+        kept, decisions = screen_contexts(
+            "哪家博物院召开见面会？",
+            [
+                "故宫博物院首次召开见面会，负责人任剑表示将规范管理。",
+                "河南博物院首次召开见面会，负责人任建和表示将规范管理。",
+            ],
+            conflict_threshold=0.5,
+        )
+        self.assertEqual(len(kept), 2)
+        self.assertTrue(all("potential_claim_conflict" in row.reasons for row in decisions))
+
 
 if __name__ == "__main__":
     unittest.main()

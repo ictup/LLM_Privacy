@@ -30,6 +30,16 @@ CHINESE_RISK_PATTERNS = {
     ),
 }
 
+NUMBER_RE = re.compile(r"\d+(?:\.\d+)?(?:%|％|个百分点|年|所|人次)?")
+QUOTED_RE = re.compile(r"[“\"']([^”\"']{2,24})[”\"']")
+ENTITY_RE = re.compile(
+    r"[\u3400-\u4dbf\u4e00-\u9fff]{2,16}(?:博物院|医院|大学|平台|公司|委员会|中心|部门)"
+)
+PERSON_RE = re.compile(
+    r"(?:负责人|院长|主任|专家)([\u3400-\u4dbf\u4e00-\u9fff]{2,4})(?:表示|指出|称)"
+)
+RETAINED_RISK_FLAGS = frozenset({"potential_claim_conflict"})
+
 
 @dataclass(frozen=True)
 class ScreeningDecision:
@@ -57,6 +67,28 @@ def _relevance(question_tokens: set[str], text: str) -> float:
     return _jaccard(question_tokens, text_tokens)
 
 
+def _claim_markers(text: str) -> set[str]:
+    markers = {f"number:{value}" for value in NUMBER_RE.findall(text)}
+    markers.update(f"quoted:{value}" for value in QUOTED_RE.findall(text))
+    markers.update(f"entity:{value}" for value in ENTITY_RE.findall(text))
+    markers.update(f"person:{value}" for value in PERSON_RE.findall(text))
+    return markers
+
+
+def _is_potential_claim_conflict(
+    left: str,
+    right: str,
+    left_tokens: set[str],
+    right_tokens: set[str],
+    threshold: float,
+) -> bool:
+    if left == right or _jaccard(left_tokens, right_tokens) < threshold:
+        return False
+    left_markers = _claim_markers(left)
+    right_markers = _claim_markers(right)
+    return bool(left_markers or right_markers) and left_markers != right_markers
+
+
 def context_risk_reasons(text: str) -> list[str]:
     reasons = list(unsafe_reasons(text))
     reasons.extend(name for name, pattern in CHINESE_RISK_PATTERNS.items() if pattern.search(text))
@@ -67,8 +99,9 @@ def screen_contexts(
     question: str,
     contexts: list[str],
     duplicate_threshold: float = 0.96,
+    conflict_threshold: float = 0.78,
 ) -> tuple[list[str], list[ScreeningDecision]]:
-    """Remove explicit attacks and near-duplicate contexts without benchmark labels."""
+    """Remove explicit attacks while preserving conflicting near-duplicates."""
 
     question_tokens = _token_set(question)
     candidates = []
@@ -84,22 +117,45 @@ def screen_contexts(
             }
         )
 
-    candidates.sort(key=lambda item: (bool(item["reasons"]), -item["relevance"], item["index"]))
+    conflict_indexes: set[int] = set()
+    for left_index, left in enumerate(candidates):
+        for right in candidates[left_index + 1 :]:
+            if _is_potential_claim_conflict(
+                left["text"],
+                right["text"],
+                left["tokens"],
+                right["tokens"],
+                conflict_threshold,
+            ):
+                conflict_indexes.update((left["index"], right["index"]))
+    for item in candidates:
+        if item["index"] in conflict_indexes:
+            item["reasons"].append("potential_claim_conflict")
+
+    candidates.sort(
+        key=lambda item: (
+            any(reason not in RETAINED_RISK_FLAGS for reason in item["reasons"]),
+            -item["relevance"],
+            item["index"],
+        )
+    )
     kept = []
-    kept_tokens: list[set[str]] = []
+    kept_candidates: list[dict] = []
     decisions: dict[int, ScreeningDecision] = {}
     for item in candidates:
         reasons = list(item["reasons"])
         duplicate = any(
-            _jaccard(item["tokens"], existing) >= duplicate_threshold
-            for existing in kept_tokens
+            _jaccard(item["tokens"], existing["tokens"]) >= duplicate_threshold
+            and "potential_claim_conflict" not in item["reasons"]
+            and "potential_claim_conflict" not in existing["reasons"]
+            for existing in kept_candidates
         )
         if duplicate:
             reasons.append("near_duplicate")
-        should_keep = not reasons
+        should_keep = not any(reason not in RETAINED_RISK_FLAGS for reason in reasons)
         if should_keep:
             kept.append(item["text"])
-            kept_tokens.append(item["tokens"])
+            kept_candidates.append(item)
         decisions[item["index"]] = ScreeningDecision(
             context_hash=_hash(item["text"]),
             kept=should_keep,

@@ -11,6 +11,7 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
+from ragshield.evaluation.saferag_judge import FROZEN_JUDGE_PROMPT_HASH, JUDGE_VERSION
 from ragshield.evaluation.saferag_statistics import (
     exact_mcnemar,
     paired_bootstrap_difference,
@@ -100,6 +101,15 @@ def _aggregate(rows: list[dict[str, Any]], system: str, task: str | None = None)
         else None,
         "avg_final_context_count": round(
             mean(row["generation"]["final_context_count"] for row in selected), 3
+        )
+        if selected
+        else None,
+        "judge_consistent_rate": round(
+            mean(
+                row["judgment"]["metrics"].get("judge_consistent", True)
+                for row in selected
+            ),
+            6,
         )
         if selected
         else None,
@@ -202,6 +212,8 @@ def build_summary(
         "protocol_version": PROTOCOL_VERSION,
         "generator_model": generator_model,
         "judge_model": judge_model,
+        "judge_version": JUDGE_VERSION,
+        "judge_prompt_hash": FROZEN_JUDGE_PROMPT_HASH,
         "execution_evidence": {
             "generation_rows": len(generation_rows),
             "judgment_rows": len(judgment_rows),
@@ -210,6 +222,12 @@ def build_summary(
             ),
             "unique_judge_response_ids": len({row["response_id"] for row in judgment_rows}),
             "initial_context_pair_mismatches": mismatches,
+            "judge_consistency_flagged_rows": sum(
+                not row["metrics"].get("judge_consistent", True) for row in judgment_rows
+            ),
+            "judge_low_confidence_rows": sum(
+                row["metrics"].get("judge_confidence") == "low" for row in judgment_rows
+            ),
         },
         "generation_cost": _cost(generation_rows),
         "judge_cost": _cost(judgment_rows),
@@ -219,7 +237,7 @@ def build_summary(
             "The generator and automated judge use the same model family.",
             "Human blind review is required before claiming judge validity.",
             "SafeRAG evaluates data-injection security, not differential privacy.",
-            "The full defense uses label-free heuristics and may miss factual conflicts.",
+            "The label-free defense may miss plausible, semantically injected facts.",
             "Raw SafeRAG text and model answers are retained locally due source licensing.",
         ],
     }
@@ -240,6 +258,8 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
         f"- SafeRAG commit: `{summary['saferag_commit']}`",
         f"- Generator: `{summary['generator_model']}`",
         f"- Judge: `{summary['judge_model']}`",
+        f"- Judge protocol: `{summary['judge_version']}`",
+        f"- Judge prompt hash: `{summary['judge_prompt_hash']}`",
         f"- Confirmatory cases: {confirmatory['n_cases']}",
         "- Primary endpoint: judge-assessed attack adoption",
         "- Utility endpoint: macro F1 over supported correct and contradicted incorrect options",
@@ -249,6 +269,23 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
     ]
     evidence = summary["execution_evidence"]
     lines.extend(f"- {key.replace('_', ' ').title()}: {value}" for key, value in evidence.items())
+    development = summary["development"]
+    lines.extend(
+        [
+            "",
+            "## Development Results (Tuning Only)",
+            "",
+            "These eight cases are excluded from the primary confirmatory claim.",
+            "",
+            "| System | N | Attack Adoption | Utility F1 | Grounded |",
+            "|---|---:|---:|---:|---:|",
+        ]
+    )
+    for row in development["overall"]:
+        lines.append(
+            f"| {row['system']} | {row['n']} | {_pct(row['attack_adoption_rate'])} | "
+            f"{_pct(row['option_macro_f1'])} | {_pct(row['grounded_rate'])} |"
+        )
     lines.extend(
         [
             "",
@@ -361,6 +398,7 @@ def write_public_audit(
                 "generation_response_id_sha256": _sha256(generation["response_id"]),
                 "answer_sha256": _sha256(generation["answer"]),
                 "judge_response_id_sha256": _sha256(judgment["response_id"]),
+                "judge_prompt_hash": judgment.get("judge_prompt_hash"),
                 "judge_metrics": judgment["metrics"],
                 "generation_usage": generation["usage"],
                 "judge_usage": judgment["usage"],

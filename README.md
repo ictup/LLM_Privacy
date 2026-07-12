@@ -70,7 +70,7 @@ The interview-facing confirmatory study is preregistered in
 
 - `baseline`: BM25 retrieval plus generation without defenses.
 - `context_boundary`: the same initial contexts with untrusted-evidence separation.
-- `ragshield_full`: label-free context screening, near-duplicate removal, fake PII/secret
+- `ragshield_full`: label-free context screening, conflict-preserving deduplication, fake PII/secret
   redaction, context separation, output validation, and the existing tool-policy boundary.
 
 SafeRAG uses task-specific upstream context sizes: SN receives three attack plus three

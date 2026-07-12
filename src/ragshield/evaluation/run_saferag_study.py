@@ -10,7 +10,12 @@ from pathlib import Path
 from typing import Any
 
 from ragshield.benchmarks.saferag import SafeRAGCase, load_saferag
-from ragshield.evaluation.saferag_judge import judge_answer
+from ragshield.evaluation.saferag_judge import (
+    FROZEN_JUDGE_PROMPT_HASH,
+    JUDGE_VERSION,
+    judge_answer,
+    verify_frozen_judge,
+)
 from ragshield.evaluation.saferag_study_protocol import (
     MODEL_SNAPSHOT,
     PROTOCOL_VERSION,
@@ -73,11 +78,12 @@ def _generation_key(row: dict[str, Any]) -> tuple[str, str, str, str, int]:
     )
 
 
-def _judgment_key(row: dict[str, Any]) -> tuple[str, str, str, str, str, int]:
+def _judgment_key(row: dict[str, Any]) -> tuple[str, str, str, str, str, str, int]:
     return (
         row["protocol_version"],
         row["generator_model"],
         row["judge_model"],
+        row.get("judge_prompt_hash", "legacy"),
         row["system"],
         row["task"],
         int(row["case_id"]),
@@ -198,6 +204,8 @@ def _judge_one(
         "generator_model": generation["requested_model"],
         "generator_response_id": generation["response_id"],
         "judge_model": client.model,
+        "judge_version": JUDGE_VERSION,
+        "judge_prompt_hash": FROZEN_JUDGE_PROMPT_HASH,
         "response_model": judged.response_model,
         "response_id": judged.response_id,
         "labels": judged.labels,
@@ -238,6 +246,7 @@ def run_judging(
             PROTOCOL_VERSION,
             generation["requested_model"],
             client.model,
+            FROZEN_JUDGE_PROMPT_HASH,
             generation["system"],
             generation["task"],
             int(generation["case_id"]),
@@ -299,6 +308,7 @@ def _filter_judgments(
         if row.get("protocol_version") == PROTOCOL_VERSION
         and row.get("generator_model") == generator_model
         and row.get("judge_model") == judge_model
+        and row.get("judge_prompt_hash") == FROZEN_JUDGE_PROMPT_HASH
         and row.get("system") in systems
         and (split == "all" or row.get("split") == split)
     ]
@@ -354,6 +364,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     verify_frozen_protocol()
+    verify_frozen_judge()
     calls = expected_calls(args.root, args.systems, args.split)
     print(json.dumps({"protocol": PROTOCOL_VERSION, "model": args.model, **calls}, indent=2))
     if args.phase == "dry-run":
