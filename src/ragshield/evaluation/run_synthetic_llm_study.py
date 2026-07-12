@@ -388,7 +388,7 @@ def parse_args() -> argparse.Namespace:
         choices=[spec.name for spec in SYSTEMS],
         default=[spec.name for spec in SYSTEMS],
     )
-    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--max-calls", type=int, default=None)
     parser.add_argument(
         "--case-output", default="reports/synthetic_gpt5mini_generations.jsonl"

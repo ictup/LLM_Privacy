@@ -3,7 +3,7 @@ param(
     [string]$Phase = "all",
     [ValidateSet("development", "confirmatory", "all")]
     [string]$Split = "all",
-    [int]$Workers = 4
+    [int]$Workers = 16
 )
 
 $model = "gpt-5-mini-2025-08-07"

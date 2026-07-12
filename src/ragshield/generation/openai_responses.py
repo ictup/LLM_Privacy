@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import time
 import urllib.error
 import urllib.request
@@ -52,7 +53,7 @@ class OpenAIResponsesClient:
         model: str,
         reasoning_effort: str = "low",
         timeout_seconds: int = 120,
-        max_retries: int = 3,
+        max_retries: int = 5,
         max_output_tokens: int = 512,
         api_key: str | None = None,
         transport: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
@@ -158,12 +159,12 @@ class OpenAIResponsesClient:
                 message = _safe_error_message(response_text)
                 retryable = error.code in {408, 409, 429, 500, 502, 503, 504}
                 if retryable and attempt < self.max_retries:
-                    time.sleep(min(2**attempt, 8))
+                    time.sleep(_retry_delay(attempt, error.headers.get("Retry-After")))
                     continue
                 raise OpenAIAPIError(f"OpenAI API HTTP {error.code}: {message}") from error
             except urllib.error.URLError as error:
                 if attempt < self.max_retries:
-                    time.sleep(min(2**attempt, 8))
+                    time.sleep(_retry_delay(attempt))
                     continue
                 raise OpenAIAPIError(f"OpenAI API connection failed: {error.reason}") from error
         raise OpenAIAPIError("OpenAI API request failed after retries.")
@@ -175,3 +176,12 @@ def _safe_error_message(response_text: str) -> str:
         return str(payload.get("error", {}).get("message", "request failed"))[:500]
     except json.JSONDecodeError:
         return "request failed"
+
+
+def _retry_delay(attempt: int, retry_after: str | None = None) -> float:
+    if retry_after is not None:
+        try:
+            return min(max(float(retry_after), 0.0), 30.0)
+        except ValueError:
+            pass
+    return min(2**attempt, 12) + random.uniform(0.0, 0.75)

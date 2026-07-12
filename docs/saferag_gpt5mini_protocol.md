@@ -157,3 +157,6 @@ SafeRAG requires 2,322 calls for all 387 cases: 1,161 generations and 1,161 judg
 The complete interview suite adds 612 controlled-canary generations for 2,934 calls total.
 The paid runners require explicit `RUN` confirmation and hidden API-key entry. They resume
 from local JSONL logs and never write the key to source, reports, or command arguments.
+The default runner uses 16 concurrent workers with five retry attempts, server-provided
+`Retry-After` handling, and exponential backoff. Concurrency affects wall-clock time only;
+the frozen prompts, cases, model snapshot, endpoints, and scoring remain unchanged.

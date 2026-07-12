@@ -348,7 +348,7 @@ def parse_args() -> argparse.Namespace:
         choices=[spec.name for spec in SYSTEM_SPECS],
         default=[spec.name for spec in SYSTEM_SPECS],
     )
-    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--max-generation-calls", type=int, default=None)
     parser.add_argument("--max-judge-calls", type=int, default=None)
     parser.add_argument(
