@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from ragshield.defenses.privacy_guard import PrivacyDecision
+from ragshield.defenses.context_screener import ScreeningDecision
 from ragshield.defenses.tool_gate import ToolDecision, ToolRequest
 from ragshield.retrieval.tenant_isolation import TenantPrincipal, TenantSearchObservation
 from ragshield.tracing.logger import AuditLogger
@@ -108,6 +109,36 @@ class SecurityAuditLogger:
                 "categories": decision.categories,
                 "finding_count": len(decision.findings),
                 "findings": [finding.to_dict() for finding in decision.findings],
+            },
+        )
+
+    def log_context_defense(
+        self,
+        query: str,
+        decisions: tuple[ScreeningDecision, ...],
+        redacted_count: int,
+        output_hashes: tuple[str, ...],
+    ) -> dict[str, Any]:
+        return self._log(
+            "context_defense",
+            "context_pipeline",
+            {
+                "query_sha256": _sha256(query),
+                "input_count": len(decisions),
+                "kept_count": len(output_hashes),
+                "removed_count": len(decisions) - len(output_hashes),
+                "redacted_count": redacted_count,
+                "decisions": [
+                    {
+                        "context_hash": decision.context_hash,
+                        "kept": decision.kept and "fallback_retained" not in decision.reasons,
+                        "reasons": decision.reasons,
+                        "relevance": decision.relevance,
+                    }
+                    for decision in decisions
+                ],
+                "output_sha256": output_hashes,
+                "untrusted_boundary_applied": True,
             },
         )
 

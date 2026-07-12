@@ -164,29 +164,32 @@ least 2/3. This is a dual-model automatic evaluation, not human ground truth.
 
 ## Controlled Security Extensions
 
-The following controls compose into a separate, deterministic security path:
+The following controls compose into one deterministic, end-to-end security path:
 
 ```mermaid
 flowchart LR
     U[Authenticated user] --> T[Tenant-scoped retrieval]
-    T --> C[Context defenses]
-    C --> M[Model output]
+    T --> C[Attack screening and context redaction]
+    C --> B[Untrusted-context boundary]
+    B --> M[Model output]
     M --> P[PII, secret, and canary guard]
     P --> G[Least-privilege tool gate]
-    G --> H[Scoped human approval]
-    H --> A[Versioned JSONL audit]
+    G --> H[Fail-closed high-risk hold]
+    H --> A[Versioned secret-safe audit]
 ```
 
 | Control | Fail-closed behavior | Measure |
 |---|---|---|
 | Privacy guard | Detect and redact controlled PII, secrets, and system canaries | Output leakage rate |
+| Context defense | Remove explicit instruction attacks, redact controlled secrets, and wrap retained evidence as untrusted | Removed/redacted context counts |
 | Tool gate | Deny unknown tools and unauthorized roles; require scoped approval for high risk | Unauthorized tool-call rate |
 | Tenant isolation | Filter by authenticated `tenant_id` before retrieval scoring | Cross-tenant query/chunk rates |
 | Security audit | Exclude raw prompts, outputs, secrets, and tool arguments | Sequenced schema-valid events |
 
-The tool executor is side-effect-free. These controls are covered by deterministic
-tests and a local demonstration, but have not been evaluated as a population-level
-LLM study. See [the control specification](docs/security_controls.md).
+The tool executor is side-effect-free. The committed regression report verifies
+that all layers execute in one request chain and pass nine fail-closed checks.
+This remains controlled functional evidence rather than a population-level LLM
+study. See [the control specification](docs/security_controls.md).
 
 ## Frozen Study Design
 
@@ -226,6 +229,8 @@ no explicit redistribution license.
 | [PrivacyLens report](reports/privacylens_deepseek_report.md) | Contextual leakage, helpfulness, paired effects, and judge agreement |
 | [PrivacyLens result JSON](reports/privacylens_deepseek_results.json) | Machine-readable aggregate results and cost evidence |
 | [PrivacyLens public audit](reports/privacylens_deepseek_audit.json) | Secret-free action hashes and 600 response identifiers |
+| [Integrated controls report](reports/security_controls_report.md) | End-to-end tenant, context, output, tool, and audit regression |
+| [Integrated controls result JSON](reports/security_controls_results.json) | Machine-readable nine-check controlled validation |
 
 ## Reproduce
 

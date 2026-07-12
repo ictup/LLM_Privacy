@@ -1,0 +1,92 @@
+{
+  "all_checks_passed": true,
+  "audit": {
+    "event_count": 10,
+    "event_types": [
+      "context_defense",
+      "metric_summary",
+      "privacy_decision",
+      "tenant_retrieval",
+      "tool_decision"
+    ],
+    "schema_version": "ragshield.security.audit.v1",
+    "secret_safe": true
+  },
+  "checks": {
+    "audit_contains_no_raw_control_values": true,
+    "audit_sequence_contiguous_per_trace": true,
+    "context_attack_removed": true,
+    "context_secret_redacted": true,
+    "high_risk_tool_fails_closed": true,
+    "output_leakage_removed": true,
+    "tenant_filter_prevents_cross_tenant_exposure": true,
+    "unauthorized_tool_denied": true,
+    "untrusted_boundary_applied": true
+  },
+  "context_defense": {
+    "input_contexts": 3,
+    "kept_contexts": 2,
+    "redacted_contexts": 1,
+    "removed_contexts": 1,
+    "untrusted_boundary_applied": true
+  },
+  "evidence_scope": "deterministic_control_validation_not_an_llm_benchmark",
+  "high_risk_policy": {
+    "decision": "approval_required",
+    "executed": false
+  },
+  "privacy": {
+    "baseline": {
+      "findings_by_category": {
+        "pii": 1,
+        "secret": 1
+      },
+      "findings_by_rule": {
+        "email_address": 1,
+        "fake_api_key": 1
+      },
+      "leakage_rate": 0.5,
+      "leaked_outputs": 1,
+      "total_findings": 2,
+      "total_outputs": 2
+    },
+    "guarded": {
+      "findings_by_category": {},
+      "findings_by_rule": {},
+      "leakage_rate": 0.0,
+      "leaked_outputs": 0,
+      "total_findings": 0,
+      "total_outputs": 2
+    }
+  },
+  "tenant_isolation": {
+    "guarded": {
+      "cross_tenant_chunk_rate": 0.0,
+      "cross_tenant_chunks": 0,
+      "cross_tenant_query_rate": 0.0,
+      "queries_with_cross_tenant_exposure": 0,
+      "returned_chunks": 3,
+      "total_queries": 1
+    },
+    "open_baseline": {
+      "cross_tenant_chunk_rate": 0.25,
+      "cross_tenant_chunks": 1,
+      "cross_tenant_query_rate": 1.0,
+      "queries_with_cross_tenant_exposure": 1,
+      "returned_chunks": 4,
+      "total_queries": 1
+    }
+  },
+  "tool_authorization": {
+    "allowed_requests": 1,
+    "approval_required_requests": 1,
+    "decisions_by_reason": {
+      "human_approval_required": 1,
+      "policy_allow": 1,
+      "role_not_allowed": 1
+    },
+    "denied_requests": 1,
+    "total_requests": 3,
+    "unauthorized_tool_call_rate": 0.333333
+  }
+}
