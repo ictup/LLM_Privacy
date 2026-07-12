@@ -1,0 +1,22 @@
+{
+  "name": "Text Anonymization Benchmark",
+  "short_name": "TAB",
+  "paper": "The Text Anonymization Benchmark: A Dedicated Corpus and Evaluation Framework for Text Anonymization",
+  "venue": "Computational Linguistics 48(4), 2022",
+  "doi": "10.1162/coli_a_00458",
+  "repository": "https://github.com/NorskRegnesentral/text-anonymization-benchmark.git",
+  "commit": "558e09e26d6b36f5f78440074e6a233946d98bd9",
+  "license": "MIT",
+  "status": "offline_evaluation_complete",
+  "expected_counts": {
+    "train_documents": 1014,
+    "dev_documents": 127,
+    "test_documents": 127,
+    "quality_checked_test_documents": 127
+  },
+  "files": {
+    "echr_train.json": "4c32ca0081b6d9f0bebf1f702185b302bff26948a29a511f1f540d94a481c78b",
+    "echr_dev.json": "7f04db1eb4f28c96d0685a72d86a48adc2cd7b09e6a88af5dc6b5a0855d1fd3e",
+    "echr_test.json": "b3ef4bc88dbc0e0a8dc88b7f608393167e1c2882ebf19544509d4003646c0086"
+  }
+}

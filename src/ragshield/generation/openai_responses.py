@@ -8,8 +8,9 @@ import random
 import time
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
 from typing import Any, Callable
+
+from ragshield.generation.types import ModelResponse, StructuredModelResponse
 
 
 DEFAULT_BASE_URL = "https://api.openai.com/v1"
@@ -17,24 +18,6 @@ DEFAULT_BASE_URL = "https://api.openai.com/v1"
 
 class OpenAIAPIError(RuntimeError):
     """Raised for sanitized Responses API failures."""
-
-
-@dataclass(frozen=True)
-class ModelResponse:
-    response_id: str
-    model: str
-    text: str
-    input_tokens: int
-    output_tokens: int
-    total_tokens: int
-    latency_ms: float
-    status: str = "completed"
-
-
-@dataclass(frozen=True)
-class StructuredModelResponse:
-    response: ModelResponse
-    data: dict[str, Any]
 
 
 def _output_text(payload: dict[str, Any]) -> str:

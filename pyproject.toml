@@ -13,6 +13,7 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+privacy = ["spacy>=3.7,<4"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

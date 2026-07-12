@@ -1,0 +1,17 @@
+{
+  "name": "PrivacyLens",
+  "paper": "PrivacyLens: Evaluating Privacy Norm Awareness of Language Models in Action",
+  "venue": "NeurIPS 2024 Datasets and Benchmarks Track",
+  "doi": "10.52202/079017-2837",
+  "repository": "https://github.com/SALT-NLP/PrivacyLens.git",
+  "commit": "9c2ee07b080dc54ed4924af11d9751e81753c94d",
+  "license": "CC-BY-4.0 for the Hugging Face dataset; MIT for the code repository",
+  "status": "official_data_validated_real_model_study_pending",
+  "expected_counts": {
+    "cases": 493,
+    "sensitive_items": 1487
+  },
+  "files": {
+    "data/main_data.json": "9f0f4b3aebcfb1029810c1d3ef0011d0e137a94bc4609595cfb143c5ac17f59e"
+  }
+}

@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import asdict, dataclass
-from typing import Pattern
+from typing import Iterable, Pattern
 
 
 @dataclass(frozen=True)
@@ -97,8 +97,24 @@ PRIVACY_RULES = (
 )
 
 
-def _digest(value: str) -> str:
+def sensitive_value_sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def select_non_overlapping_findings(
+    candidates: Iterable[SensitiveFinding],
+) -> tuple[SensitiveFinding, ...]:
+    """Prefer the longest finding when multiple detectors return overlapping spans."""
+
+    ordered = sorted(candidates, key=lambda finding: (finding.start, -(finding.end - finding.start)))
+    findings: list[SensitiveFinding] = []
+    occupied_until = -1
+    for finding in ordered:
+        if finding.start < occupied_until:
+            continue
+        findings.append(finding)
+        occupied_until = finding.end
+    return tuple(findings)
 
 
 def detect_sensitive_data(text: str) -> tuple[SensitiveFinding, ...]:
@@ -113,34 +129,34 @@ def detect_sensitive_data(text: str) -> tuple[SensitiveFinding, ...]:
                     rule_id=rule.rule_id,
                     start=match.start(),
                     end=match.end(),
-                    value_sha256=_digest(match.group(0)),
+                    value_sha256=sensitive_value_sha256(match.group(0)),
                     replacement=rule.replacement,
                 )
             )
+    return select_non_overlapping_findings(candidates)
 
-    candidates.sort(key=lambda finding: (finding.start, -(finding.end - finding.start)))
-    findings: list[SensitiveFinding] = []
-    occupied_until = -1
-    for finding in candidates:
-        if finding.start < occupied_until:
-            continue
-        findings.append(finding)
-        occupied_until = finding.end
-    return tuple(findings)
+
+def redact_findings(
+    text: str,
+    findings: Iterable[SensitiveFinding],
+) -> PrivacyDecision:
+    selected = select_non_overlapping_findings(findings)
+    if not selected:
+        return PrivacyDecision(redacted_text=text, findings=())
+
+    pieces: list[str] = []
+    cursor = 0
+    for finding in selected:
+        if not 0 <= finding.start < finding.end <= len(text):
+            raise ValueError(f"Sensitive finding is outside the text boundary: {finding}")
+        pieces.append(text[cursor : finding.start])
+        pieces.append(finding.replacement)
+        cursor = finding.end
+    pieces.append(text[cursor:])
+    return PrivacyDecision(redacted_text="".join(pieces), findings=selected)
 
 
 def inspect_and_redact(text: str) -> PrivacyDecision:
     """Return redacted text plus safe metadata describing every finding."""
 
-    findings = detect_sensitive_data(text)
-    if not findings:
-        return PrivacyDecision(redacted_text=text, findings=())
-
-    pieces: list[str] = []
-    cursor = 0
-    for finding in findings:
-        pieces.append(text[cursor : finding.start])
-        pieces.append(finding.replacement)
-        cursor = finding.end
-    pieces.append(text[cursor:])
-    return PrivacyDecision(redacted_text="".join(pieces), findings=findings)
+    return redact_findings(text, detect_sensitive_data(text))

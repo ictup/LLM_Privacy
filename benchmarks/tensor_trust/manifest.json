@@ -1,0 +1,20 @@
+{
+  "name": "Tensor Trust",
+  "paper": "Tensor Trust: Interpretable Prompt Injection Attacks from an Online Game",
+  "venue": "ICLR 2024",
+  "repository": "https://github.com/HumanCompatibleAI/tensor-trust-data.git",
+  "commit": "747a75e096761ebc01bd3970158827326b4add23",
+  "license": "No LICENSE file found in the pinned data repository; keep raw data local",
+  "status": "official_data_validated_real_model_study_pending",
+  "benchmark_version": "v1",
+  "expected_counts": {
+    "extraction_robustness": 570,
+    "hijacking_robustness": 776,
+    "extraction_detection": 230
+  },
+  "files": {
+    "benchmarks/extraction-robustness/v1/extraction_robustness_dataset.jsonl": "3399d4c65defb3b9c450e277f229c01433b2820c8665a799cacb08182104a938",
+    "benchmarks/hijacking-robustness/v1/hijacking_robustness_dataset.jsonl": "d760db983a6f12f489ed16d920d072ad8563b523ffd0bdc7578e3c62d6ded600",
+    "detecting-extractions/v1/prompt_extraction_detection.jsonl": "e20895dedd29592588c3d48df9835b077eb464a556bfcf07ab754b5b0679349b"
+  }
+}

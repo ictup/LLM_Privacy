@@ -89,6 +89,25 @@ The implementation also provides:
 - Resumable 32-worker API execution with retry and completion checks.
 - Hash-based public audits while raw benchmark text stays local.
 
+## External Privacy Evaluation
+
+The project also evaluates its fixed PII detector offline on the peer-reviewed
+[Text Anonymization Benchmark](https://aclanthology.org/2022.cl-4.19/). The
+official quality-checked test split contains 127 public ECHR court documents and
+7,248 annotated mentions that should be protected.
+
+| Detector | Character F1 | Exact mention F1 | Full coverage recall | Text retention |
+|---|---:|---:|---:|---:|
+| Structured secret/PII regex | 0.000 | 0.000 | 0.000 | 1.000 |
+| spaCy NER | **0.610** | **0.447** | **0.674** | 0.783 |
+| Combined | **0.610** | **0.447** | **0.674** | 0.783 |
+
+The zero regex result is expected: those rules target emails, API-key forms, and
+other structured secrets rather than ordinary court-document names, locations,
+and organizations. NER broadens coverage but falsely redacts 10.7% of document
+characters. This is an offline span evaluation against human annotations, not an
+LLM generation study or a production privacy guarantee.
+
 ## Controlled Security Extensions
 
 The following controls compose into a separate, deterministic security path:
@@ -145,6 +164,8 @@ no explicit redistribution license.
 | [SafeRAG report](reports/saferag_gpt5mini_report.md) | Final metrics, paired effects, task results, and limitations |
 | [SafeRAG result JSON](reports/saferag_gpt5mini_results.json) | Machine-readable aggregate results and execution evidence |
 | [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and judge-consistency metadata |
+| [TAB offline report](reports/tab_offline_report.md) | External human-annotated PII span metrics and privacy-utility trade-off |
+| [TAB result JSON](reports/tab_offline_results.json) | Machine-readable aggregate detector results |
 
 ## Reproduce
 
@@ -166,6 +187,13 @@ py scripts\run_security_controls_demo.py
 
 Its local summary explicitly identifies itself as control validation rather than
 an LLM benchmark result.
+
+Run the complete offline TAB test split without an API key:
+
+```powershell
+$env:PYTHONPATH = "src"
+py -m ragshield.evaluation.tab_study --phase report
+```
 
 Fetch the pinned SafeRAG data directly from the authors and validate its hashes:
 
@@ -194,7 +222,7 @@ and blind-review files are Git-ignored.
 ## Repository Layout
 
 ```text
-benchmarks/saferag/       Pinned provenance, hashes, and integration notes
+benchmarks/               Pinned provenance and hashes for external benchmarks
 docs/                     Frozen protocol and interview/application wording
 reports/                  Final SafeRAG aggregate evidence and public audit
 scripts/                  SafeRAG fetcher and GPT-5 mini study runner
@@ -213,6 +241,8 @@ Supported by the current evidence:
   pinned benchmark, protocol, model snapshot, and local raw logs.
 - Deterministic tests establish that the prototype privacy, tool, tenant, and
   audit controls enforce their documented behavior on controlled fixtures.
+- On TAB's full official test split, the fixed NER detector achieved 0.610
+  character F1 and exposed substantial recall and over-redaction limitations.
 
 Not supported by the current evidence:
 

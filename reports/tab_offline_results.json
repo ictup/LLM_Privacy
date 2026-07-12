@@ -1,0 +1,127 @@
+{
+  "study": {
+    "protocol_version": "tab-offline-external-v1",
+    "generated_at_utc": "2026-07-12T18:20:57.393651+00:00",
+    "benchmark": "Text Anonymization Benchmark",
+    "benchmark_commit": "558e09e26d6b36f5f78440074e6a233946d98bd9",
+    "benchmark_venue": "Computational Linguistics 48(4), 2022",
+    "benchmark_license": "MIT",
+    "split": "test",
+    "documents": 127,
+    "quality_checked_documents": 127,
+    "spacy_model": "en_core_web_sm",
+    "api_calls": 0,
+    "estimated_api_cost_usd": 0.0
+  },
+  "systems": {
+    "regex_rules": {
+      "documents": 127,
+      "document_characters": 647638,
+      "gold_mentions": 7248,
+      "predicted_spans": 0,
+      "exact_matches": 0,
+      "fully_covered_mentions": 0,
+      "overlapping_mentions": 0,
+      "gold_characters": 92555,
+      "predicted_characters": 0,
+      "intersecting_characters": 0,
+      "character_precision": 0.0,
+      "character_recall": 0.0,
+      "character_f1": 0.0,
+      "exact_mention_precision": 0.0,
+      "exact_mention_recall": 0.0,
+      "exact_mention_f1": 0.0,
+      "full_coverage_recall": 0.0,
+      "overlap_recall": 0.0,
+      "predicted_character_rate": 0.0,
+      "false_positive_character_rate": 0.0,
+      "text_retention_rate": 1.0,
+      "full_coverage_recall_by_type": {
+        "CODE": 0.0,
+        "DATETIME": 0.0,
+        "DEM": 0.0,
+        "LOC": 0.0,
+        "MISC": 0.0,
+        "ORG": 0.0,
+        "PERSON": 0.0,
+        "QUANTITY": 0.0
+      }
+    },
+    "spacy_ner": {
+      "documents": 127,
+      "document_characters": 647638,
+      "gold_mentions": 7248,
+      "predicted_spans": 10436,
+      "exact_matches": 3951,
+      "fully_covered_mentions": 4884,
+      "overlapping_mentions": 6363,
+      "gold_characters": 92555,
+      "predicted_characters": 140427,
+      "intersecting_characters": 71053,
+      "character_precision": 0.505978,
+      "character_recall": 0.767684,
+      "character_f1": 0.609944,
+      "exact_mention_precision": 0.378593,
+      "exact_mention_recall": 0.545116,
+      "exact_mention_f1": 0.446845,
+      "full_coverage_recall": 0.673841,
+      "overlap_recall": 0.877897,
+      "predicted_character_rate": 0.216829,
+      "false_positive_character_rate": 0.107118,
+      "text_retention_rate": 0.783171,
+      "full_coverage_recall_by_type": {
+        "CODE": 0.777487,
+        "DATETIME": 0.918241,
+        "DEM": 0.456075,
+        "LOC": 0.829588,
+        "MISC": 0.140969,
+        "ORG": 0.675431,
+        "PERSON": 0.375315,
+        "QUANTITY": 0.393939
+      }
+    },
+    "combined": {
+      "documents": 127,
+      "document_characters": 647638,
+      "gold_mentions": 7248,
+      "predicted_spans": 10436,
+      "exact_matches": 3951,
+      "fully_covered_mentions": 4884,
+      "overlapping_mentions": 6363,
+      "gold_characters": 92555,
+      "predicted_characters": 140427,
+      "intersecting_characters": 71053,
+      "character_precision": 0.505978,
+      "character_recall": 0.767684,
+      "character_f1": 0.609944,
+      "exact_mention_precision": 0.378593,
+      "exact_mention_recall": 0.545116,
+      "exact_mention_f1": 0.446845,
+      "full_coverage_recall": 0.673841,
+      "overlap_recall": 0.877897,
+      "predicted_character_rate": 0.216829,
+      "false_positive_character_rate": 0.107118,
+      "text_retention_rate": 0.783171,
+      "full_coverage_recall_by_type": {
+        "CODE": 0.777487,
+        "DATETIME": 0.918241,
+        "DEM": 0.456075,
+        "LOC": 0.829588,
+        "MISC": 0.140969,
+        "ORG": 0.675431,
+        "PERSON": 0.375315,
+        "QUANTITY": 0.393939
+      }
+    }
+  },
+  "claim_boundary": {
+    "supported": [
+      "Offline span-detection performance on TAB's human annotations.",
+      "Comparison of fixed regex, spaCy NER, and combined detectors."
+    ],
+    "not_supported": [
+      "Re-identification resistance or production privacy guarantees.",
+      "LLM privacy behavior, because this study makes no LLM API calls."
+    ]
+  }
+}

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Callable
 
 from ragshield.agents.mock_tools import MockToolExecutor
 from ragshield.defenses.privacy_guard import PrivacyDecision, inspect_and_redact
@@ -35,11 +35,13 @@ class RAGShieldSecurityPipeline:
         audit: SecurityAuditLogger,
         tool_policy: ToolPolicy | None = None,
         tool_executor: MockToolExecutor | None = None,
+        privacy_inspector: Callable[[str], PrivacyDecision] = inspect_and_redact,
     ):
         self.retriever = retriever
         self.audit = audit
         self.tool_policy = tool_policy or default_tool_policy()
         self.tool_executor = tool_executor or MockToolExecutor()
+        self.privacy_inspector = privacy_inspector
 
     def retrieve(self, query: str, top_k: int = 5) -> list[RetrievedChunk]:
         chunks, observation = self.retriever.search(
@@ -51,7 +53,7 @@ class RAGShieldSecurityPipeline:
         return chunks
 
     def protect_output(self, output: str) -> PrivacyDecision:
-        decision = inspect_and_redact(output)
+        decision = self.privacy_inspector(output)
         self.audit.log_privacy_decision("model_output", output, decision)
         return decision
 
