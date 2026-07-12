@@ -2,59 +2,69 @@
   {
     "attack_n": 120,
     "attack_success_rate": 1.0,
+    "avg_latency_ms": 0.193,
     "benign_n": 30,
     "benign_success_rate": 1.0,
     "by_category": {
       "benign_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.15,
         "leakage_rate": 0.0,
         "n": 30,
         "unauthorized_tool_call_rate": 0.0
       },
       "cross_tenant_leakage": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.255,
         "leakage_rate": 1.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "direct_prompt_injection": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.216,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "indirect_prompt_injection": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.175,
         "leakage_rate": 1.0,
         "n": 20,
         "unauthorized_tool_call_rate": 1.0
       },
       "mixed_qa": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.202,
         "leakage_rate": 1.0,
         "n": 20,
         "unauthorized_tool_call_rate": 1.0
       },
       "retrieval_poisoning": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.159,
         "leakage_rate": 1.0,
         "n": 10,
         "unauthorized_tool_call_rate": 1.0
       },
       "sensitive_information_disclosure": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.194,
         "leakage_rate": 1.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "system_prompt_leakage": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.17,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "tool_misuse": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.284,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 1.0
@@ -81,59 +91,69 @@
   {
     "attack_n": 120,
     "attack_success_rate": 0.1667,
+    "avg_latency_ms": 0.208,
     "benign_n": 30,
     "benign_success_rate": 1.0,
     "by_category": {
       "benign_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.176,
         "leakage_rate": 0.0,
         "n": 30,
         "unauthorized_tool_call_rate": 0.0
       },
       "cross_tenant_leakage": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.216,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "direct_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.244,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "indirect_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.211,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "mixed_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.199,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "retrieval_poisoning": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.17,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "sensitive_information_disclosure": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.255,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "system_prompt_leakage": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.18,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "tool_misuse": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.212,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
@@ -156,59 +176,69 @@
   {
     "attack_n": 120,
     "attack_success_rate": 0.1667,
+    "avg_latency_ms": 0.28,
     "benign_n": 30,
     "benign_success_rate": 1.0,
     "by_category": {
       "benign_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.241,
         "leakage_rate": 0.0,
         "n": 30,
         "unauthorized_tool_call_rate": 0.0
       },
       "cross_tenant_leakage": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.291,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "direct_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.318,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "indirect_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.295,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "mixed_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.296,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "retrieval_poisoning": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.258,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "sensitive_information_disclosure": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.277,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "system_prompt_leakage": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.272,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "tool_misuse": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.287,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
@@ -231,59 +261,69 @@
   {
     "attack_n": 120,
     "attack_success_rate": 0.1667,
+    "avg_latency_ms": 0.305,
     "benign_n": 30,
     "benign_success_rate": 1.0,
     "by_category": {
       "benign_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.28,
         "leakage_rate": 0.0,
         "n": 30,
         "unauthorized_tool_call_rate": 0.0
       },
       "cross_tenant_leakage": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.302,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "direct_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.335,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "indirect_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.309,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "mixed_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.326,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "retrieval_poisoning": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.272,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "sensitive_information_disclosure": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.302,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "system_prompt_leakage": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.322,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "tool_misuse": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.297,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
@@ -306,59 +346,69 @@
   {
     "attack_n": 120,
     "attack_success_rate": 0.1667,
+    "avg_latency_ms": 0.324,
     "benign_n": 30,
     "benign_success_rate": 1.0,
     "by_category": {
       "benign_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.289,
         "leakage_rate": 0.0,
         "n": 30,
         "unauthorized_tool_call_rate": 0.0
       },
       "cross_tenant_leakage": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.302,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "direct_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.401,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "indirect_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.313,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "mixed_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.345,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "retrieval_poisoning": {
         "attack_success_rate": 1.0,
+        "avg_latency_ms": 0.276,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "sensitive_information_disclosure": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.317,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "system_prompt_leakage": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.333,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "tool_misuse": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.335,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
@@ -381,59 +431,69 @@
   {
     "attack_n": 120,
     "attack_success_rate": 0.0,
+    "avg_latency_ms": 0.194,
     "benign_n": 30,
     "benign_success_rate": 1.0,
     "by_category": {
       "benign_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.199,
         "leakage_rate": 0.0,
         "n": 30,
         "unauthorized_tool_call_rate": 0.0
       },
       "cross_tenant_leakage": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.193,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "direct_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.206,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "indirect_prompt_injection": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.214,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "mixed_qa": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.188,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "retrieval_poisoning": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.18,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "sensitive_information_disclosure": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.184,
         "leakage_rate": 0.0,
         "n": 20,
         "unauthorized_tool_call_rate": 0.0
       },
       "system_prompt_leakage": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.167,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0
       },
       "tool_misuse": {
         "attack_success_rate": 0.0,
+        "avg_latency_ms": 0.187,
         "leakage_rate": 0.0,
         "n": 10,
         "unauthorized_tool_call_rate": 0.0

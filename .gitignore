@@ -11,5 +11,6 @@ dist/
 reports/*.jsonl
 reports/*.trace.jsonl
 reports/*.csv
+!reports/results.csv
 reports/*_summary.json
 data/generated/

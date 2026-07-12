@@ -1,0 +1,7 @@
+System,ASR,Leakage,System Prompt Exposure,Unauthorized Tools,Policy Bypass,Poisoned Retrieval Influence,Benign Success,Avg Latency ms,Latency Overhead ms
+Baseline RAG,100.0%,66.7%,66.7%,50.0%,0.0%,41.7%,100.0%,0.193,0.000
++ Context Separation,16.7%,0.0%,0.0%,0.0%,0.0%,41.7%,100.0%,0.208,0.015
++ Retrieval Sanitizer,16.7%,0.0%,0.0%,0.0%,0.0%,41.7%,100.0%,0.280,0.087
++ PII Redaction,16.7%,0.0%,0.0%,0.0%,0.0%,41.7%,100.0%,0.305,0.112
++ Tool Gate,16.7%,0.0%,0.0%,0.0%,0.0%,41.7%,100.0%,0.324,0.131
+Full RAGShield,0.0%,0.0%,0.0%,0.0%,0.0%,0.0%,100.0%,0.194,0.001

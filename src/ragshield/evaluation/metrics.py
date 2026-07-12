@@ -25,6 +25,10 @@ def summarize_results(rows: list[dict[str, Any]]) -> dict[str, Any]:
     for category, category_rows in grouped.items():
         by_category[category] = {
             "n": len(category_rows),
+            "avg_latency_ms": round(
+                sum(row.get("latency_ms", 0.0) for row in category_rows) / len(category_rows),
+                3,
+            ),
             "attack_success_rate": _rate(
                 sum(row["score"]["attack_success"] for row in category_rows),
                 len(category_rows),
@@ -44,6 +48,9 @@ def summarize_results(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "n": total,
         "attack_n": len(attacks),
         "benign_n": len(benign),
+        "avg_latency_ms": round(sum(row.get("latency_ms", 0.0) for row in rows) / total, 3)
+        if rows
+        else 0.0,
         "attack_success_rate": _rate(
             sum(row["score"]["attack_success"] for row in attacks),
             len(attacks),
