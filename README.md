@@ -8,11 +8,12 @@ retrieval manipulation in retrieval-augmented generation systems.
 ![Benchmark](https://img.shields.io/badge/Benchmark-SafeRAG%20ACL%202025-0B6E69)
 ![Status](https://img.shields.io/badge/Status-Research%20Prototype-orange)
 
-This repository contains the final SafeRAG-only version of RAGShield. It uses
-the author-released, peer-reviewed SafeRAG benchmark and does not include an
-author-generated evaluation corpus. The repository contains the defense code,
-frozen real-model protocol, aggregate results, public audit metadata, tests,
-and explicit claim boundaries.
+The primary empirical release is SafeRAG-only: it uses the author-released,
+peer-reviewed benchmark and contains no author-generated evaluation corpus.
+Alongside that frozen real-model study, the repository includes deterministic
+prototype controls for privacy redaction, tenant isolation, least-privilege
+tools, human approval, and secret-safe auditing. These controls are functional
+validation artifacts, not additional benchmark evidence.
 
 ## Research Question
 
@@ -88,6 +89,32 @@ The implementation also provides:
 - Resumable 32-worker API execution with retry and completion checks.
 - Hash-based public audits while raw benchmark text stays local.
 
+## Controlled Security Extensions
+
+The following controls compose into a separate, deterministic security path:
+
+```mermaid
+flowchart LR
+    U[Authenticated user] --> T[Tenant-scoped retrieval]
+    T --> C[Context defenses]
+    C --> M[Model output]
+    M --> P[PII, secret, and canary guard]
+    P --> G[Least-privilege tool gate]
+    G --> H[Scoped human approval]
+    H --> A[Versioned JSONL audit]
+```
+
+| Control | Fail-closed behavior | Measure |
+|---|---|---|
+| Privacy guard | Detect and redact controlled PII, secrets, and system canaries | Output leakage rate |
+| Tool gate | Deny unknown tools and unauthorized roles; require scoped approval for high risk | Unauthorized tool-call rate |
+| Tenant isolation | Filter by authenticated `tenant_id` before retrieval scoring | Cross-tenant query/chunk rates |
+| Security audit | Exclude raw prompts, outputs, secrets, and tool arguments | Sequenced schema-valid events |
+
+The tool executor is side-effect-free. These controls are covered by deterministic
+tests and a local demonstration, but have not been evaluated as a population-level
+LLM study. See [the control specification](docs/security_controls.md).
+
 ## Frozen Study Design
 
 The protocol is documented in
@@ -131,6 +158,15 @@ $env:PYTHONPATH = "src"
 py -m unittest discover -s tests
 ```
 
+Run the deterministic control demonstration without an API key:
+
+```powershell
+py scripts\run_security_controls_demo.py
+```
+
+Its local summary explicitly identifies itself as control validation rather than
+an LLM benchmark result.
+
 Fetch the pinned SafeRAG data directly from the authors and validate its hashes:
 
 ```powershell
@@ -162,7 +198,7 @@ benchmarks/saferag/       Pinned provenance, hashes, and integration notes
 docs/                     Frozen protocol and interview/application wording
 reports/                  Final SafeRAG aggregate evidence and public audit
 scripts/                  SafeRAG fetcher and GPT-5 mini study runner
-src/ragshield/            Retrieval, defenses, judging, and evaluation
+src/ragshield/            Retrieval, privacy, agents, tracing, and evaluation
 tests/                    Focused unit and report-generation tests
 ```
 
@@ -175,13 +211,16 @@ Supported by the current evidence:
 - WDoS and ICC improved substantially; SN remains a clear open problem.
 - The execution and paired statistical analysis are reproducible from the
   pinned benchmark, protocol, model snapshot, and local raw logs.
+- Deterministic tests establish that the prototype privacy, tool, tenant, and
+  audit controls enforce their documented behavior on controlled fixtures.
 
 Not supported by the current evidence:
 
 - Production-grade security against arbitrary or adaptive attacks.
 - Independent judge validity before blind human annotation is completed.
 - Generalization across model families, retrievers, languages, or repeated runs.
-- Empirical claims about PII leakage, cross-tenant isolation, or tool misuse.
+- Population-level or real-model effectiveness claims for PII leakage,
+  cross-tenant isolation, or tool misuse.
 - Differential privacy, federated learning, or homomorphic encryption.
 
 ## Limitations and Next Experiments

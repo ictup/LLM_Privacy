@@ -19,8 +19,15 @@ class Document:
     text: str
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    @property
+    def tenant_id(self) -> str:
+        """Explicit alias used by tenant-isolated security interfaces."""
+
+        return self.tenant
+
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
 
 @dataclass(frozen=True)
 class RetrievedChunk:
@@ -35,6 +42,10 @@ class RetrievedChunk:
     text: str
     score: float
     unsafe_reasons: list[str] = field(default_factory=list)
+
+    @property
+    def tenant_id(self) -> str:
+        return self.tenant
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

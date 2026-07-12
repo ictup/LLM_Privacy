@@ -16,6 +16,11 @@ the current rule-based screener.
 - Label-free context screening and conflict-preserving deduplication.
 - Sensitive-pattern redaction and policy-aware output validation.
 - Structured judging, paired statistics, resumable execution, and hash-based audits.
+- A deterministic extension with output PII/secret detection, tenant-scoped retrieval,
+  least-privilege mock tools, scoped human approval, and versioned secret-safe JSONL traces.
+
+The last item is implementation evidence only. It was not part of the 377-case SafeRAG
+study and should not be presented as a statistically validated real-model result.
 
 ## How to Explain the Evidence
 
@@ -64,6 +69,20 @@ rows locally. The decision was frozen before inspecting final outcome tables.
 The measured utility-F1 difference was approximately zero, but its confidence interval
 crossed zero. Therefore, the correct conclusion is that utility preservation remains
 inconclusive under this strict option-level proxy.
+
+**Did you empirically validate privacy leakage, tools, and tenant isolation?**
+
+Not at SafeRAG scale. I implemented these as fail-closed, deterministic control extensions
+and verified their behavior with side-effect-free fixtures and audit traces. The only
+large real-model evidence is the frozen SafeRAG indirect-injection study. A next study
+would freeze a separate threat protocol and evaluate leakage and unauthorized tool-call
+rates with real model requests and independent human labels.
+
+**Why is the earlier synthetic corpus not in the final repository?**
+
+It was useful for pipeline debugging but weak as external evidence. I removed it from the
+final quantitative claim and kept only small deterministic security fixtures for regression
+tests. The peer-reviewed SafeRAG benchmark is the sole empirical corpus in the release.
 
 **What would be the PhD research contribution?**
 
