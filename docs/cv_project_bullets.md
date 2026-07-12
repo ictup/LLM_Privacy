@@ -1,18 +1,39 @@
-# CV Project Bullets
+# Repository-Supported Project Bullets
 
-Keep the `research prototype` qualifier and describe the primary endpoint as
-`judge-assessed attack adoption` rather than universal attack success.
+Keep the `research prototype` qualifier. These statements match the committed
+evidence; they are not instructions to alter already-submitted application files.
 
-**RAGShield: Auditable Prompt-Injection Defense Evaluation for RAG Systems**
-Tech stack: Python, OpenAI Responses API, SafeRAG, BM25, structured evaluation, paired statistics, hash-based audits
+**RAGShield: Auditable Security and Privacy Evaluation for RAG and LLM Agents**
 
-- Built a reproducible red-blue evaluation prototype for adversarial RAG, focused on injected retrieval content, inter-context conflict, soft advertising, semantic noise, and denial-of-service evidence.
-- Implemented a layered defense pipeline with label-free context screening, conflict-preserving deduplication, untrusted-context separation, sensitive-pattern redaction, and policy-aware output validation.
-- Ran a frozen real-model study with `gpt-5-mini-2025-08-07` on the peer-reviewed ACL 2025 SafeRAG benchmark; analyzed 377 of 379 untouched confirmatory cases under three paired system conditions.
-- Reduced judge-assessed SafeRAG attack adoption from 71.4% to 29.7%, a 41.6 percentage-point paired reduction (95% CI: 35.8-47.7 points; exact McNemar `p < 0.0001`), while the utility-F1 difference remained inconclusive.
-- Preserved reproducibility through pinned dataset/model versions, frozen development and confirmatory splits, resumable concurrent runners, completion-status checks, structured response metadata, hash-based public audits, and transparent complete-case exclusions.
-- Identified silver noise as the main residual weakness: attack adoption decreased by only 7.1 points, motivating semantic provenance modeling and adaptive evaluation as follow-up research.
+- Built a reproducible red-blue evaluation prototype covering indirect retrieval
+  attacks, direct prompt hijacking and extraction, contextual privacy leakage,
+  anonymization, tenant isolation, and least-privilege tool controls.
+- Implemented tenant-scoped retrieval, label-free context screening,
+  conflict-preserving deduplication, sensitive-data redaction, untrusted-context
+  separation, policy-aware output validation, fail-closed tool gating, and
+  versioned secret-safe audits.
+- Evaluated four external peer-reviewed benchmarks: 377 complete SafeRAG cases,
+  the full 127-document TAB test split, a frozen 100-case Tensor Trust pilot, and
+  a source-stratified 50-case PrivacyLens pilot.
+- Reduced judge-assessed SafeRAG attack adoption from 71.4% to 29.7% (paired
+  difference -41.6 points, 95% CI -47.7 to -35.8; exact McNemar `p < 0.0001`).
+- On Tensor Trust, reduced final attack success from 57% to 0% with layered
+  authorization/output gating while retaining 80% valid-access success; raw
+  full-system model attack success remained 36%.
+- On PrivacyLens, reduced conservative dual-model leakage from 56% to 14% using
+  privacy instructions at unchanged 94% helpfulness; the full system reached 6%
+  leakage and 80% helpfulness.
+- Preserved reproducibility through pinned benchmark commits, frozen samples,
+  resumable 32-worker runners, cost preflights, paired statistics, 1,200 DeepSeek
+  response IDs, and public audits that exclude raw benchmark content.
+- Documented negative results: weak SafeRAG Silver Noise robustness, TAB
+  over-redaction and person recall, Tensor Trust dependence on deterministic
+  gates, and PrivacyLens output-validator over-blocking.
 
 Short version:
 
-**RAGShield** *(research prototype)*: Built and evaluated a layered security pipeline for RAG systems using a frozen GPT-5 mini protocol and ACL 2025 SafeRAG. Across 377 paired confirmatory cases, the full condition reduced judge-assessed attack adoption from 71.4% to 29.7% (95% CI for paired reduction: 35.8-47.7 points; `p < 0.0001`) and exposed semantic-noise robustness as the main remaining weakness.
+**RAGShield** *(research prototype)*: Built an auditable layered security pipeline
+and evaluated four peer-reviewed RAG/privacy benchmarks. Measured substantial
+reductions in SafeRAG attack adoption, Tensor Trust hijacking/extraction, and
+PrivacyLens contextual leakage, while reporting residual semantic-noise,
+over-redaction, judge-validity, and security-utility limitations.

@@ -2,98 +2,125 @@
 
 ## 30-Second Summary
 
-RAGShield is a research prototype for testing and defending RAG systems against adversarial
-retrieved evidence. I evaluated the same fixed GPT-5 mini model under three paired
-conditions on the peer-reviewed SafeRAG benchmark. Across 377 complete confirmatory cases,
-the full defense reduced judge-assessed attack adoption from 71.4% to 29.7%. The experiment
-also exposes a clear failure: semantically plausible silver noise remains difficult for
-the current rule-based screener.
+RAGShield is an auditable research prototype for measuring and reducing security
+and privacy failures across RAG and tool-using LLM systems. I evaluated it on four
+external peer-reviewed benchmarks: SafeRAG for malicious retrieved evidence,
+Tensor Trust for direct hijacking and secret extraction, PrivacyLens for
+contextual privacy in agent actions, and TAB for anonymization against human span
+annotations. The results show that layered controls reduce attacks and leakage,
+but also expose clear failures in semantic-noise detection, over-redaction, and
+privacy-validator over-blocking.
 
-## What I Built
+## Presentation Structure
 
-- A BM25 RAG baseline and fixed-model OpenAI Responses API runner.
-- An explicit untrusted-context boundary.
-- Label-free context screening and conflict-preserving deduplication.
-- Sensitive-pattern redaction and policy-aware output validation.
-- Structured judging, paired statistics, resumable execution, and hash-based audits.
-- A deterministic extension with output PII/secret detection, tenant-scoped retrieval,
-  least-privilege mock tools, scoped human approval, and versioned secret-safe JSONL traces.
+1. **Problem:** retrieved content and tool observations are untrusted data, but
+   models can treat them as instructions or disclose them in later actions.
+2. **Architecture:** tenant scope, context screening/redaction, untrusted-context
+   boundary, model generation, output privacy validation, tool gate, and
+   secret-safe audit.
+3. **Experimental design:** frozen external data, paired systems, complete-case
+   analysis, deterministic or structured scoring, confidence intervals, and
+   public audits without raw benchmark text.
+4. **Results:** present SafeRAG, Tensor Trust, PrivacyLens, and TAB as separate
+   tasks rather than pooling incompatible metrics.
+5. **Failures and PhD direction:** semantic provenance, validator calibration,
+   adaptive attacks, and independent evaluation.
 
-The last item is implementation evidence only. It was not part of the 377-case SafeRAG
-study and should not be presented as a statistically validated real-model result.
+## Four Evidence Layers
 
-## How to Explain the Evidence
+### 1. SafeRAG: Indirect Retrieval Attacks
 
-SafeRAG was released with an ACL 2025 Long Paper and provides 387 Chinese RAG-security
-cases. I used eight cases only for development and kept 379 for confirmation. Two cases
-repeatedly failed operationally, so I froze a complete-case rule and analyzed the remaining
-377 cases under all three systems.
+- ACL 2025 benchmark; 377 complete paired confirmatory cases.
+- GPT-5 mini generated all three conditions and provided structured judgments.
+- Attack adoption: 71.4% baseline, 40.6% context boundary, 29.7% full.
+- Full versus baseline: -41.6 percentage points, 95% paired CI -47.7 to
+  -35.8, exact McNemar `p < 0.0001`.
+- Utility-F1 difference was inconclusive.
+- Main failure: Silver Noise improved only 7.1 points.
 
-The primary metric is attack adoption. It asks whether the answer actually follows the
-malicious or corrupted claim. It does not count an answer as compromised merely because
-the model mentions the attack while warning about it. Full RAGShield reduced this rate by
-41.6 percentage points; the paired 95% confidence interval was 35.8 to 47.7 points and the
-exact McNemar test gave `p < 0.0001`.
+### 2. Tensor Trust: Direct Hijacking and Extraction
 
-## The Most Important Failure
+- ICLR 2024 benchmark; fixed 100-case sample, 600 DeepSeek Flash calls.
+- Attack success: 57% baseline, 35% context boundary, 0% final full system.
+- Valid-access success: 61%, 87%, and 80%, respectively.
+- Critical qualification: full raw model attack success was 36%; the final zero
+  came from deterministic authorization and secret-output gating.
 
-Silver noise remained difficult: adoption fell only from 52.0% to 44.9%. The current
-screener is strongest when an attack has recognizable instructions, advertising patterns,
-or obvious denial-of-service content. It is weaker when a misleading passage resembles
-ordinary relevant evidence. This motivates learned provenance, semantic contradiction
-detection, and adaptive attacker training rather than adding more keyword rules.
+### 3. PrivacyLens: Contextual Privacy
+
+- NeurIPS 2024 dataset; source-stratified 50-case sample.
+- 100 generations, 100 privacy validations, and 400 Flash/Pro judge calls.
+- Leakage/helpfulness: baseline 56%/94%, privacy prompt 14%/94%, output
+  validator 14%/58%, full 6%/80%.
+- The privacy prompt was the best measured trade-off; the validator alone
+  over-blocked 42% of actions.
+- Judges are different models from one provider, not human ground truth.
+
+### 4. TAB: Human-Annotated Anonymization
+
+- Computational Linguistics 2022 benchmark; full official test split of 127
+  public ECHR documents and 7,248 protected mentions.
+- Combined detector: 0.610 character F1, 0.674 full-coverage recall, 0.783 text
+  retention, and 0.107 false-positive character rate.
+- Main failure: person recall was 37.5% and miscellaneous-entity recall 14.1%.
 
 ## Questions to Answer Directly
 
-**Did a real LLM run?**
+**Did real LLMs run?**
 
-Yes. Every reported confirmatory generation and automated judgment used the pinned
-`gpt-5-mini-2025-08-07` API snapshot. Public reports include aggregate token, latency, and
-response-status audits; raw answers remain local because SafeRAG has no explicit
-redistribution license at the pinned commit.
+Yes. The SafeRAG study used a pinned GPT-5 mini snapshot. Tensor Trust and
+PrivacyLens used 1,200 successful DeepSeek response IDs in total. TAB is an
+offline detector study and makes no LLM calls. The integrated tool/tenant
+regression is deterministic and must not be described as a real-model benchmark.
 
-**Why use the same model as generator and judge?**
+**Are the datasets real?**
 
-It kept the study affordable and frozen, but it introduces correlated-bias risk. The next
-validation step is the generated 48-answer blind human review, followed by an independent
-model judge. Until then, the endpoint is explicitly called judge-assessed attack adoption.
+They are external, versioned, peer-reviewed research benchmarks. TAB contains
+real public court text with human annotations. Tensor Trust contains attacks from
+human players. SafeRAG is an author-released security benchmark. PrivacyLens uses
+realistic constructed scenarios grounded in regulations, literature, and
+crowdsourcing; it does not contain private victim records.
 
-**Why were two cases excluded?**
+**Did the defense see the answers?**
 
-They repeatedly failed at the API stage. I excluded the whole paired case rather than mix
-systems with different sample sizes, documented the exact IDs, and retained successful raw
-rows locally. The decision was frozen before inspecting final outcome tables.
+No for the new pilots. Tensor Trust scoring uses access codes only after model
+generation. PrivacyLens sensitive-item labels are withheld from generation and
+output validation and supplied only to the automatic judges. Frozen sample IDs
+and protocol files were committed before the paid runs.
 
-**Did the defense preserve utility?**
+**Why are there controlled fixtures?**
 
-The measured utility-F1 difference was approximately zero, but its confidence interval
-crossed zero. Therefore, the correct conclusion is that utility preservation remains
-inconclusive under this strict option-level proxy.
+External benchmarks support the empirical claims. Small fixtures test
+deterministic properties that benchmarks do not cover directly: tenant filtering
+before ranking, role-based tool denial, high-risk fail-closed behavior, secret
+redaction, and raw-value-free audit logs. They are regression tests, not a
+synthetic benchmark.
 
-**Did you empirically validate privacy leakage, tools, and tenant isolation?**
+**Why was the author-generated corpus removed?**
 
-Not at SafeRAG scale. I implemented these as fail-closed, deterministic control extensions
-and verified their behavior with side-effect-free fixtures and audit traces. The only
-large real-model evidence is the frozen SafeRAG indirect-injection study. A next study
-would freeze a separate threat protocol and evaluate leakage and unauthorized tool-call
-rates with real model requests and independent human labels.
+It was useful for early debugging but weak as independent evidence. The final
+release relies on external peer-reviewed benchmarks for empirical claims and
+retains only small deterministic fixtures for security regression.
 
-**Why is the earlier synthetic corpus not in the final repository?**
+**Which result is most important?**
 
-It was useful for pipeline debugging but weak as external evidence. I removed it from the
-final quantitative claim and kept only small deterministic security fixtures for regression
-tests. The peer-reviewed SafeRAG benchmark is the sole empirical corpus in the release.
+The strongest scientific result is not a single lowest number. It is the paired
+evidence that different layers solve different failures: context boundaries help
+without blocking, hard output gates can eliminate residual attacks but reduce
+utility, and semantic noise remains difficult for rules.
 
-**What would be the PhD research contribution?**
+**What is the PhD research direction?**
 
-Move from hand-engineered screening to adaptive, provenance-aware defenses and evaluation:
-learn source trust and semantic conflicts, generate attacks against the complete RAG path,
-validate with humans and independent judges, and compare multiple models and retrievers.
+Replace hand-engineered screening with learned provenance and semantic-conflict
+models; optimize validators for the privacy-utility frontier; evaluate adaptive
+attacks across retrieval and tools; and validate endpoints with independent
+providers, repeated runs, and human labels.
 
 ## Claims to Avoid
 
 - Do not say RAGShield solves prompt injection or is production secure.
-- Do not say the utility stayed the same; say the measured difference was inconclusive.
-- Do not claim empirical PII leakage, cross-tenant, or tool-misuse results.
+- Do not describe Tensor Trust's final zero as model-level robustness.
+- Do not call PrivacyLens automatic judgments human ground truth.
+- Do not pool the four benchmarks into one effectiveness percentage.
+- Do not present controlled tool/tenant fixtures as population-level evidence.
 - Do not claim differential privacy, federated learning, or homomorphic encryption.
-- Do not call the automated judge independent until human or cross-model validation exists.

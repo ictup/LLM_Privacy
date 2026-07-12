@@ -220,6 +220,7 @@ no explicit redistribution license.
 |---|---|
 | [Unified evidence summary](reports/evidence_summary.md) | Cross-benchmark scorecard, complete ablations, integrity checks, and claim boundary |
 | [Unified evidence JSON](reports/evidence_results.json) | Machine-readable synthesis generated from all committed result files |
+| [Failure analysis](reports/failure_analysis.md) | Residual risks, negative results, judge limitations, and research priorities |
 | [SafeRAG report](reports/saferag_gpt5mini_report.md) | Final metrics, paired effects, task results, and limitations |
 | [SafeRAG result JSON](reports/saferag_gpt5mini_results.json) | Machine-readable aggregate results and execution evidence |
 | [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and judge-consistency metadata |
