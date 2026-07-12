@@ -236,6 +236,21 @@ def run_judging(
     output_path = Path(output)
     existing_rows = _read(output_path)
     existing = {_judgment_key(row) for row in existing_rows}
+    systems_by_case: dict[tuple[str, int], set[str]] = {}
+    for generation in generation_rows:
+        if generation.get("protocol_version") != PROTOCOL_VERSION:
+            continue
+        case_key = (generation["task"], int(generation["case_id"]))
+        systems_by_case.setdefault(case_key, set()).add(generation["system"])
+    required_systems = set(systems)
+    complete_cases = {
+        case_key
+        for case_key, available_systems in systems_by_case.items()
+        if required_systems <= available_systems
+    }
+    excluded_cases = sorted(set(systems_by_case) - complete_cases)
+    if excluded_cases:
+        print(f"Incomplete cases excluded from judging: {excluded_cases}")
     work = []
     for generation in generation_rows:
         if generation.get("protocol_version") != PROTOCOL_VERSION:
@@ -243,6 +258,8 @@ def run_judging(
         if generation["system"] not in systems:
             continue
         if split != "all" and generation["split"] != split:
+            continue
+        if (generation["task"], int(generation["case_id"])) not in complete_cases:
             continue
         key = (
             PROTOCOL_VERSION,

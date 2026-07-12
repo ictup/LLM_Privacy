@@ -140,6 +140,12 @@ additional requests failed without output. Those rows are excluded. Version 6 ra
 generation cap to 2,048 and rejects every API payload whose status is not `completed`.
 No v5 answer content or confirmatory metric was used to modify the defense.
 
+During the v6 run, one context-boundary generation for `WDoS-47` failed repeatedly while
+the other 1,136 confirmatory generations completed. Before any confirmatory judging, the
+run adopted `complete-case-v1`: `WDoS-47` is excluded across all three systems, leaving
+378 paired confirmatory cases. The failed and successful generation records remain in the
+execution audit. This operational exclusion does not change prompts, defenses, or labels.
+
 ## Reproduction
 
 ```powershell

@@ -20,6 +20,7 @@ from ragshield.evaluation.saferag_statistics import (
 from ragshield.evaluation.saferag_study_protocol import (
     PROTOCOL_VERSION,
     SAFERAG_COMMIT,
+    SYSTEM_SPECS,
 )
 
 
@@ -27,6 +28,7 @@ MODEL_STANDARD_PRICES = {
     "gpt-5-mini-2025-08-07": {"input": 0.25, "output": 2.0},
     "gpt-5.5-2026-04-23": {"input": 5.0, "output": 30.0},
 }
+ANALYSIS_VERSION = "complete-case-v1"
 
 
 def _key(row: dict[str, Any]) -> tuple[str, str, int]:
@@ -164,14 +166,59 @@ def _paired(rows: list[dict[str, Any]], treatment: str) -> dict[str, Any]:
     }
 
 
-def _split_summary(rows: list[dict[str, Any]], split: str) -> dict[str, Any]:
-    selected = [row for row in rows if row["generation"]["split"] == split]
+def _split_summary(
+    rows: list[dict[str, Any]],
+    generation_rows: list[dict[str, Any]],
+    split: str,
+) -> dict[str, Any]:
+    available = [row for row in rows if row["generation"]["split"] == split]
+    expected_systems = {spec.name for spec in SYSTEM_SPECS}
+    systems_by_case: dict[tuple[str, int], set[str]] = defaultdict(set)
+    for row in available:
+        generation = row["generation"]
+        systems_by_case[(generation["task"], int(generation["case_id"]))].add(
+            generation["system"]
+        )
+    generation_systems_by_case: dict[tuple[str, int], set[str]] = defaultdict(set)
+    for generation in generation_rows:
+        if generation.get("split") == split:
+            generation_systems_by_case[
+                (generation["task"], int(generation["case_id"]))
+            ].add(generation["system"])
+    complete_cases = {
+        case_key
+        for case_key, systems in systems_by_case.items()
+        if expected_systems <= systems
+    }
+    excluded_incomplete_cases = [
+        {
+            "task": task,
+            "case_id": case_id,
+            "available_generation_systems": sorted(
+                generation_systems_by_case[(task, case_id)]
+            ),
+            "missing_generation_systems": sorted(
+                expected_systems - generation_systems_by_case[(task, case_id)]
+            ),
+            "available_judgment_systems": sorted(systems_by_case[(task, case_id)]),
+            "missing_judgment_systems": sorted(
+                expected_systems - systems_by_case[(task, case_id)]
+            ),
+        }
+        for task, case_id in sorted(set(generation_systems_by_case) - complete_cases)
+    ]
+    selected = [
+        row
+        for row in available
+        if (row["generation"]["task"], int(row["generation"]["case_id"]))
+        in complete_cases
+    ]
     systems = sorted({row["generation"]["system"] for row in selected})
     tasks = sorted({row["generation"]["task"] for row in selected})
     return {
-        "n_cases": len(
-            {(row["generation"]["task"], row["generation"]["case_id"]) for row in selected}
-        ),
+        "n_available_cases": len(generation_systems_by_case),
+        "n_cases": len(complete_cases),
+        "excluded_incomplete_cases": excluded_incomplete_cases,
         "overall": [_aggregate(selected, system) for system in systems],
         "by_task": [
             _aggregate(selected, system, task) for system in systems for task in tasks
@@ -214,10 +261,25 @@ def build_summary(
     for row in generation_rows:
         initial_hashes[(row["task"], int(row["case_id"]))].add(row["initial_context_hash"])
     mismatches = sum(len(values) != 1 for values in initial_hashes.values())
+    development = _split_summary(merged, generation_rows, "development")
+    confirmatory = _split_summary(merged, generation_rows, "confirmatory")
+    limitations = [
+        "The generator and automated judge use the same model family.",
+        "Human blind review is required before claiming judge validity.",
+        "SafeRAG evaluates data-injection security, not differential privacy.",
+        "The label-free defense may miss plausible, semantically injected facts.",
+        "Raw SafeRAG text and model answers are retained locally due source licensing.",
+    ]
+    if confirmatory["excluded_incomplete_cases"]:
+        limitations.append(
+            "Primary estimates use complete-case analysis after an API generation failure; "
+            "the excluded case and missing system are reported explicitly."
+        )
     return {
         "benchmark": "SafeRAG",
         "saferag_commit": SAFERAG_COMMIT,
         "protocol_version": PROTOCOL_VERSION,
+        "analysis_version": ANALYSIS_VERSION,
         "generator_model": generator_model,
         "judge_model": judge_model,
         "judge_version": JUDGE_VERSION,
@@ -252,15 +314,9 @@ def build_summary(
         },
         "generation_cost": _cost(generation_rows, generator_model),
         "judge_cost": _cost(judgment_rows, judge_model),
-        "development": _split_summary(merged, "development"),
-        "confirmatory": _split_summary(merged, "confirmatory"),
-        "limitations": [
-            "The generator and automated judge use the same model family.",
-            "Human blind review is required before claiming judge validity.",
-            "SafeRAG evaluates data-injection security, not differential privacy.",
-            "The label-free defense may miss plausible, semantically injected facts.",
-            "Raw SafeRAG text and model answers are retained locally due source licensing.",
-        ],
+        "development": development,
+        "confirmatory": confirmatory,
+        "limitations": limitations,
     }
 
 
@@ -276,6 +332,7 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
         "## Study Identity",
         "",
         f"- Protocol: `{summary['protocol_version']}`",
+        f"- Analysis: `{summary['analysis_version']}`",
         f"- SafeRAG commit: `{summary['saferag_commit']}`",
         f"- Generator: `{summary['generator_model']}`",
         f"- Judge: `{summary['judge_model']}`",
@@ -307,6 +364,15 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
             f"| {row['system']} | {row['n']} | {_pct(row['attack_adoption_rate'])} | "
             f"{_pct(row['option_macro_f1'])} | {_pct(row['grounded_rate'])} |"
         )
+    if confirmatory["excluded_incomplete_cases"]:
+        lines.extend(["", "### Complete-Case Exclusions", ""])
+        for row in confirmatory["excluded_incomplete_cases"]:
+            lines.append(
+                f"- {row['task']}-{row['case_id']}: generation missing "
+                f"{', '.join(row['missing_generation_systems']) or 'none'}; "
+                f"generated {', '.join(row['available_generation_systems']) or 'none'}. "
+                "The entire case is excluded before judging."
+            )
     lines.extend(
         [
             "",
@@ -432,6 +498,7 @@ def write_public_audit(
         )
     payload = {
         "protocol_version": PROTOCOL_VERSION,
+        "analysis_version": ANALYSIS_VERSION,
         "saferag_commit": SAFERAG_COMMIT,
         "note": "Opaque response IDs and raw text are hashed; benchmark text is not redistributed.",
         "records": records,

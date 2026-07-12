@@ -60,6 +60,22 @@ def judgment(system, response_id, adopted):
 
 
 class SafeRAGStudyReportTests(unittest.TestCase):
+    def test_incomplete_case_is_excluded_from_all_system_estimates(self):
+        generations = [generation("baseline", "gen_0"), generation("context_boundary", "gen_1")]
+        judgments = [
+            judgment("baseline", "judge_0", adopted=True),
+            judgment("context_boundary", "judge_1", adopted=False),
+        ]
+        summary = build_summary(generations, judgments, "gpt-test", "gpt-test")
+        confirmatory = summary["confirmatory"]
+        self.assertEqual(confirmatory["n_available_cases"], 1)
+        self.assertEqual(confirmatory["n_cases"], 0)
+        self.assertEqual(len(confirmatory["excluded_incomplete_cases"]), 1)
+        self.assertEqual(
+            confirmatory["excluded_incomplete_cases"][0]["missing_generation_systems"],
+            ["ragshield_full"],
+        )
+
     def test_complete_report_and_blind_audit_are_generated(self):
         systems = ["baseline", "context_boundary", "ragshield_full"]
         generations = [generation(system, f"gen_{index}") for index, system in enumerate(systems)]
