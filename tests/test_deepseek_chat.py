@@ -49,7 +49,9 @@ class DeepSeekChatClientTests(unittest.TestCase):
         self.assertTrue(result.data["blocked"])
 
     def test_structured_output_rejects_wrong_shape(self):
-        client = DeepSeekChatClient(transport=lambda _: response_payload('{"blocked": "yes"}'))
+        client = DeepSeekChatClient(
+            transport=lambda _: response_payload('{"blocked": "yes"}'), max_retries=0
+        )
         with self.assertRaises(DeepSeekAPIError):
             client.generate_structured(
                 "Return JSON.",
@@ -62,6 +64,34 @@ class DeepSeekChatClientTests(unittest.TestCase):
                     "additionalProperties": False,
                 },
             )
+
+    def test_empty_output_is_retried(self):
+        responses = iter([response_payload(""), response_payload("answer")])
+        client = DeepSeekChatClient(
+            transport=lambda _: next(responses), max_retries=1, sleep=lambda _: None
+        )
+
+        self.assertEqual(client.generate("system", "question").text, "answer")
+
+    def test_invalid_structured_output_is_retried(self):
+        responses = iter([response_payload("not-json"), response_payload('{"blocked": true}')])
+        client = DeepSeekChatClient(
+            transport=lambda _: next(responses), max_retries=1, sleep=lambda _: None
+        )
+
+        result = client.generate_structured(
+            "Return JSON.",
+            "input",
+            "decision",
+            {
+                "type": "object",
+                "properties": {"blocked": {"type": "boolean"}},
+                "required": ["blocked"],
+                "additionalProperties": False,
+            },
+        )
+
+        self.assertTrue(result.data["blocked"])
 
     def test_missing_key_is_rejected_before_network_use(self):
         with self.assertRaisesRegex(RuntimeError, "DEEPSEEK_API_KEY"):

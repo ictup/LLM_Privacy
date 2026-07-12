@@ -33,6 +33,7 @@ class DeepSeekChatClient:
         max_output_tokens: int = 512,
         api_key: str | None = None,
         transport: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        sleep: Callable[[float], None] = time.sleep,
     ):
         self.model = model
         self.thinking = thinking
@@ -42,6 +43,7 @@ class DeepSeekChatClient:
         self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
         self.base_url = os.environ.get("DEEPSEEK_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
         self.transport = transport
+        self.sleep = sleep
         if not self.api_key and transport is None:
             raise RuntimeError(
                 "DEEPSEEK_API_KEY is not set. Load it into the process environment; "
@@ -63,19 +65,28 @@ class DeepSeekChatClient:
             "Do not include markdown or additional text. The required JSON schema is:\n"
             f"{json.dumps(schema, ensure_ascii=False, sort_keys=True)}"
         )
-        response = self._generate(
-            instructions + schema_prompt,
-            input_text,
-            response_format={"type": "json_object"},
-        )
-        try:
-            data = json.loads(response.text)
-        except json.JSONDecodeError as error:
-            raise DeepSeekAPIError("Structured response was not valid JSON.") from error
-        if not isinstance(data, dict):
-            raise DeepSeekAPIError("Structured response must be a JSON object.")
-        _validate_required_shape(data, schema)
-        return StructuredModelResponse(response=response, data=data)
+        last_error: DeepSeekAPIError | None = None
+        for attempt in range(self.max_retries + 1):
+            response = self._generate(
+                instructions + schema_prompt,
+                input_text,
+                response_format={"type": "json_object"},
+            )
+            try:
+                data = json.loads(response.text)
+                if not isinstance(data, dict):
+                    raise DeepSeekAPIError("Structured response must be a JSON object.")
+                _validate_required_shape(data, schema)
+                return StructuredModelResponse(response=response, data=data)
+            except json.JSONDecodeError as error:
+                last_error = DeepSeekAPIError("Structured response was not valid JSON.")
+                last_error.__cause__ = error
+            except DeepSeekAPIError as error:
+                last_error = error
+            if attempt < self.max_retries:
+                self.sleep(_retry_delay(attempt))
+        assert last_error is not None
+        raise last_error
 
     def _generate(
         self,
@@ -96,25 +107,28 @@ class DeepSeekChatClient:
         if response_format is not None:
             payload["response_format"] = response_format
         started = time.perf_counter()
-        body = self.transport(payload) if self.transport else self._request(payload)
-        choices = body.get("choices") or []
-        message = choices[0].get("message", {}) if choices else {}
-        content = message.get("content")
-        if not isinstance(content, str) or not content.strip():
-            raise DeepSeekAPIError("DeepSeek returned no output content.")
-        usage = body.get("usage") or {}
-        input_tokens = int(usage.get("prompt_tokens", 0))
-        output_tokens = int(usage.get("completion_tokens", 0))
-        return ModelResponse(
-            response_id=str(body.get("id", "")),
-            model=str(body.get("model", self.model)),
-            text=content.strip(),
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            total_tokens=int(usage.get("total_tokens", input_tokens + output_tokens)),
-            latency_ms=round((time.perf_counter() - started) * 1000, 3),
-            status="completed",
-        )
+        for attempt in range(self.max_retries + 1):
+            body = self.transport(payload) if self.transport else self._request(payload)
+            choices = body.get("choices") or []
+            message = choices[0].get("message", {}) if choices else {}
+            content = message.get("content")
+            if isinstance(content, str) and content.strip():
+                usage = body.get("usage") or {}
+                input_tokens = int(usage.get("prompt_tokens", 0))
+                output_tokens = int(usage.get("completion_tokens", 0))
+                return ModelResponse(
+                    response_id=str(body.get("id", "")),
+                    model=str(body.get("model", self.model)),
+                    text=content.strip(),
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    total_tokens=int(usage.get("total_tokens", input_tokens + output_tokens)),
+                    latency_ms=round((time.perf_counter() - started) * 1000, 3),
+                    status="completed",
+                )
+            if attempt < self.max_retries:
+                self.sleep(_retry_delay(attempt))
+        raise DeepSeekAPIError("DeepSeek returned no output content after retries.")
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -136,12 +150,12 @@ class DeepSeekChatClient:
                 message = _safe_error_message(response_text)
                 retryable = error.code in {408, 409, 429, 500, 502, 503, 504}
                 if retryable and attempt < self.max_retries:
-                    time.sleep(_retry_delay(attempt, error.headers.get("Retry-After")))
+                    self.sleep(_retry_delay(attempt, error.headers.get("Retry-After")))
                     continue
                 raise DeepSeekAPIError(f"DeepSeek API HTTP {error.code}: {message}") from error
             except urllib.error.URLError as error:
                 if attempt < self.max_retries:
-                    time.sleep(_retry_delay(attempt))
+                    self.sleep(_retry_delay(attempt))
                     continue
                 raise DeepSeekAPIError(f"DeepSeek API connection failed: {error.reason}") from error
         raise DeepSeekAPIError("DeepSeek API request failed after retries.")
