@@ -54,4 +54,4 @@ so it is stricter than ordinary duplicate detection.
 
 - Scenario combinations are deterministic and authored from controlled templates.
 - Fictional English enterprise text does not reproduce every real document style or language.
-- A lexical retriever and deterministic answerer make this a systems benchmark, not a model leaderboard.
+- The corpus is author-generated component evidence, not an external model leaderboard.

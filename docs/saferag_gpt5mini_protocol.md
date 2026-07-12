@@ -124,21 +124,7 @@ until the sheet is completed.
 Negative or inconclusive results are retained. Prompts and defense rules must not be
 modified after confirmatory outputs have been inspected.
 
-## Protocol Lineage
-
-The earlier GPT-5.5 v2/v3 runs used only the eight development cases. They exposed and
-fixed conflict-removal and adoption-versus-mention scoring defects. Version 4 changed both
-generator and judge to the fixed GPT-5 mini snapshot and ran only the development set. Its
-judge omitted indeterminate option IDs in 6 of 24 rows and missed one adoption implied by
-an explicitly supported incorrect option. Version 5 simplifies the judge schema and moves
-both decisions into deterministic metric code. No confirmatory output was generated under
-v2, v3, or v4. Defense prompts, data split, and statistical tests remain unchanged.
-
-Version 5 began confirmatory generation but produced no confirmatory judgments. Metadata
-validation found that 550 of 1,135 returned rows exactly reached the 512-token cap and two
-additional requests failed without output. Those rows are excluded. Version 6 raises the
-generation cap to 2,048 and rejects every API payload whose status is not `completed`.
-No v5 answer content or confirmatory metric was used to modify the defense.
+## Execution Exclusions
 
 During the v6 run, one context-boundary generation for `WDoS-47` failed repeatedly while
 the other 1,136 confirmatory generations completed. Before any confirmatory judging, the

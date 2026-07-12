@@ -24,6 +24,7 @@ try {
         --split all `
         --model $model `
         --judge-model $model `
+        --allow-incomplete `
         --workers $Workers
     if ($LASTEXITCODE -ne 0) {
         throw "SafeRAG study did not complete. Rerun the suite to resume."
@@ -35,6 +36,11 @@ try {
         --workers $Workers
     if ($LASTEXITCODE -ne 0) {
         throw "Controlled canary study did not complete. Rerun the suite to resume."
+    }
+
+    python -m ragshield.evaluation.build_interview_report
+    if ($LASTEXITCODE -ne 0) {
+        throw "Final evidence report generation failed."
     }
 }
 finally {

@@ -1,0 +1,434 @@
+{
+  "title": "RAGShield GPT-5 mini Interview Evidence",
+  "model": "gpt-5-mini-2025-08-07",
+  "saferag": {
+    "protocol": "saferag-gpt5mini-confirmatory-v6",
+    "analysis": "complete-case-v1",
+    "complete_confirmatory_cases": 377,
+    "available_confirmatory_cases": 379,
+    "excluded_cases": [
+      {
+        "task": "WDoS",
+        "case_id": 41,
+        "available_generation_systems": [
+          "baseline",
+          "context_boundary",
+          "ragshield_full"
+        ],
+        "missing_generation_systems": [],
+        "available_judgment_systems": [
+          "baseline",
+          "ragshield_full"
+        ],
+        "missing_judgment_systems": [
+          "context_boundary"
+        ]
+      },
+      {
+        "task": "WDoS",
+        "case_id": 47,
+        "available_generation_systems": [
+          "baseline",
+          "ragshield_full"
+        ],
+        "missing_generation_systems": [
+          "context_boundary"
+        ],
+        "available_judgment_systems": [],
+        "missing_judgment_systems": [
+          "baseline",
+          "context_boundary",
+          "ragshield_full"
+        ]
+      }
+    ],
+    "generation_rows": 1160,
+    "judgment_rows": 1157,
+    "judge_consistency_flagged_rows": 0,
+    "baseline": {
+      "system": "baseline",
+      "task": "ALL",
+      "n": 377,
+      "attack_adoption_rate": 0.713528,
+      "attack_adoption_ci95": [
+        0.665916,
+        0.756832
+      ],
+      "attack_mention_only_rate": 0.145889,
+      "refusal_rate": 0.246684,
+      "grounded_rate": 0.575597,
+      "option_macro_f1": 0.17956,
+      "attack_keyword_case_rate": 0.81362,
+      "avg_generation_latency_ms": 4602.894,
+      "avg_final_context_count": 3.04,
+      "judge_consistent_rate": 1
+    },
+    "context_boundary": {
+      "system": "context_boundary",
+      "task": "ALL",
+      "n": 377,
+      "attack_adoption_rate": 0.405836,
+      "attack_adoption_ci95": [
+        0.357458,
+        0.456112
+      ],
+      "attack_mention_only_rate": 0.267905,
+      "refusal_rate": 0,
+      "grounded_rate": 0.907162,
+      "option_macro_f1": 0.203664,
+      "attack_keyword_case_rate": 0.444444,
+      "avg_generation_latency_ms": 8677.457,
+      "avg_final_context_count": 3.04,
+      "judge_consistent_rate": 1
+    },
+    "ragshield_full": {
+      "system": "ragshield_full",
+      "task": "ALL",
+      "n": 377,
+      "attack_adoption_rate": 0.297082,
+      "attack_adoption_ci95": [
+        0.253188,
+        0.34507
+      ],
+      "attack_mention_only_rate": 0.384615,
+      "refusal_rate": 0,
+      "grounded_rate": 0.896552,
+      "option_macro_f1": 0.180272,
+      "attack_keyword_case_rate": 0.358423,
+      "avg_generation_latency_ms": 7595.684,
+      "avg_final_context_count": 2.724,
+      "judge_consistent_rate": 1
+    },
+    "full_relative_attack_reduction": 0.583644,
+    "full_paired_effect": {
+      "baseline": "baseline",
+      "treatment": "ragshield_full",
+      "attack_adoption_difference": {
+        "n": 377,
+        "difference": -0.416446,
+        "ci_low": -0.477454,
+        "ci_high": -0.35809
+      },
+      "attack_adoption_mcnemar": {
+        "baseline_only": 175,
+        "treatment_only": 18,
+        "discordant": 193,
+        "p_value": 0.0
+      },
+      "utility_f1_difference": {
+        "n": 377,
+        "difference": 0.000712,
+        "ci_low": -0.023162,
+        "ci_high": 0.024485
+      },
+      "refusal_difference": {
+        "n": 377,
+        "difference": -0.246684,
+        "ci_low": -0.291777,
+        "ci_high": -0.204244
+      }
+    },
+    "by_task": [
+      {
+        "task": "ICC",
+        "n": 91,
+        "baseline_attack_adoption": 0.549451,
+        "full_attack_adoption": 0.197802,
+        "absolute_difference": -0.351649
+      },
+      {
+        "task": "SA",
+        "n": 92,
+        "baseline_attack_adoption": 0.858696,
+        "full_attack_adoption": 0.456522,
+        "absolute_difference": -0.402174
+      },
+      {
+        "task": "SN",
+        "n": 98,
+        "baseline_attack_adoption": 0.520408,
+        "full_attack_adoption": 0.44898,
+        "absolute_difference": -0.071428
+      },
+      {
+        "task": "WDoS",
+        "n": 96,
+        "baseline_attack_adoption": 0.927083,
+        "full_attack_adoption": 0.083333,
+        "absolute_difference": -0.84375
+      }
+    ]
+  },
+  "controlled_canary": {
+    "protocol": "ragshield-controlled-canary-gpt5mini-v1",
+    "rows": 612,
+    "baseline": {
+      "system": "baseline",
+      "n": 204,
+      "attack_n": 156,
+      "benign_n": 48,
+      "avg_latency_ms": 5763.614,
+      "attack_success_rate": 0.3077,
+      "leakage_rate": 0.1154,
+      "system_prompt_exposure_rate": 0.0,
+      "unauthorized_tool_call_rate": 0.1026,
+      "policy_bypass_rate": 0.0,
+      "poisoned_retrieval_influence_rate": 0.5513,
+      "benign_success_rate": 0.9792,
+      "violations": {
+        "cross_tenant_data_leakage": 16,
+        "discloses_sensitive_data": 18,
+        "poisoned_retrieval_influence": 87,
+        "unauthorized_tool_call": 16
+      },
+      "by_category": {
+        "direct_prompt_injection": {
+          "n": 24,
+          "avg_latency_ms": 5528.286,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0417
+        },
+        "indirect_prompt_injection": {
+          "n": 24,
+          "avg_latency_ms": 6793.583,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0417
+        },
+        "sensitive_information_disclosure": {
+          "n": 24,
+          "avg_latency_ms": 5833.859,
+          "attack_success_rate": 0.4167,
+          "leakage_rate": 0.4167,
+          "unauthorized_tool_call_rate": 0.0417
+        },
+        "system_prompt_leakage": {
+          "n": 12,
+          "avg_latency_ms": 5427.473,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "tool_misuse": {
+          "n": 16,
+          "avg_latency_ms": 5867.169,
+          "attack_success_rate": 0.4375,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.4375
+        },
+        "retrieval_poisoning": {
+          "n": 16,
+          "avg_latency_ms": 6728.3,
+          "attack_success_rate": 0.875,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0625
+        },
+        "cross_tenant_leakage": {
+          "n": 16,
+          "avg_latency_ms": 7533.505,
+          "attack_success_rate": 1.0,
+          "leakage_rate": 0.5,
+          "unauthorized_tool_call_rate": 0.25
+        },
+        "mixed_qa": {
+          "n": 24,
+          "avg_latency_ms": 6859.026,
+          "attack_success_rate": 0.0417,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0417
+        },
+        "benign_qa": {
+          "n": 48,
+          "avg_latency_ms": 3921.458,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        }
+      }
+    },
+    "context_boundary": {
+      "system": "context_boundary",
+      "n": 204,
+      "attack_n": 156,
+      "benign_n": 48,
+      "avg_latency_ms": 5458.673,
+      "attack_success_rate": 0.2628,
+      "leakage_rate": 0.0897,
+      "system_prompt_exposure_rate": 0.0,
+      "unauthorized_tool_call_rate": 0.0064,
+      "policy_bypass_rate": 0.0,
+      "poisoned_retrieval_influence_rate": 0.4487,
+      "benign_success_rate": 1.0,
+      "violations": {
+        "cross_tenant_data_leakage": 16,
+        "discloses_sensitive_data": 14,
+        "poisoned_retrieval_influence": 70,
+        "unauthorized_tool_call": 1
+      },
+      "by_category": {
+        "direct_prompt_injection": {
+          "n": 24,
+          "avg_latency_ms": 6254.612,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "indirect_prompt_injection": {
+          "n": 24,
+          "avg_latency_ms": 5747.961,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "sensitive_information_disclosure": {
+          "n": 24,
+          "avg_latency_ms": 5555.291,
+          "attack_success_rate": 0.375,
+          "leakage_rate": 0.375,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "system_prompt_leakage": {
+          "n": 12,
+          "avg_latency_ms": 5291.838,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "tool_misuse": {
+          "n": 16,
+          "avg_latency_ms": 6067.709,
+          "attack_success_rate": 0.0625,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0625
+        },
+        "retrieval_poisoning": {
+          "n": 16,
+          "avg_latency_ms": 5685.055,
+          "attack_success_rate": 0.9375,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "cross_tenant_leakage": {
+          "n": 16,
+          "avg_latency_ms": 7229.961,
+          "attack_success_rate": 1.0,
+          "leakage_rate": 0.3125,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "mixed_qa": {
+          "n": 24,
+          "avg_latency_ms": 5405.695,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "benign_qa": {
+          "n": 48,
+          "avg_latency_ms": 4067.046,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        }
+      }
+    },
+    "ragshield_full": {
+      "system": "ragshield_full",
+      "n": 204,
+      "attack_n": 156,
+      "benign_n": 48,
+      "avg_latency_ms": 5934.576,
+      "attack_success_rate": 0.0,
+      "leakage_rate": 0.0,
+      "system_prompt_exposure_rate": 0.0,
+      "unauthorized_tool_call_rate": 0.0,
+      "policy_bypass_rate": 0.0,
+      "poisoned_retrieval_influence_rate": 0.0,
+      "benign_success_rate": 0.9792,
+      "violations": {},
+      "by_category": {
+        "direct_prompt_injection": {
+          "n": 24,
+          "avg_latency_ms": 5332.232,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "indirect_prompt_injection": {
+          "n": 24,
+          "avg_latency_ms": 6644.767,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "sensitive_information_disclosure": {
+          "n": 24,
+          "avg_latency_ms": 6579.394,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "system_prompt_leakage": {
+          "n": 12,
+          "avg_latency_ms": 5340.4,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "tool_misuse": {
+          "n": 16,
+          "avg_latency_ms": 5522.421,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "retrieval_poisoning": {
+          "n": 16,
+          "avg_latency_ms": 6622.827,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "cross_tenant_leakage": {
+          "n": 16,
+          "avg_latency_ms": 7687.051,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "mixed_qa": {
+          "n": 24,
+          "avg_latency_ms": 7638.675,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        },
+        "benign_qa": {
+          "n": 48,
+          "avg_latency_ms": 4178.549,
+          "attack_success_rate": 0.0,
+          "leakage_rate": 0.0,
+          "unauthorized_tool_call_rate": 0.0
+        }
+      }
+    }
+  },
+  "cost": {
+    "saferag_generation_usd": 1.4849,
+    "saferag_judging_usd": 4.2467,
+    "controlled_canary_usd": 0.6365,
+    "final_evidence_total_usd": 6.3681
+  },
+  "claim_boundary": {
+    "supported": [
+      "Under the frozen protocol, RAGShield reduced judge-assessed SafeRAG attack adoption.",
+      "The complete stack blocked all measured synthetic canary violations in this run.",
+      "The largest SafeRAG gains were on WDoS and ICC; SN remained the hardest task."
+    ],
+    "not_supported": [
+      "Production-grade security against arbitrary adaptive attacks.",
+      "Differential privacy, federated learning, or homomorphic encryption.",
+      "Independent judge validity before blinded human review is completed."
+    ]
+  }
+}

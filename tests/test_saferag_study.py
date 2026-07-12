@@ -1,4 +1,6 @@
+import io
 import unittest
+from contextlib import redirect_stdout
 from types import SimpleNamespace
 
 from ragshield.benchmarks.saferag import SafeRAGCase
@@ -8,6 +10,7 @@ from ragshield.evaluation.saferag_statistics import (
     paired_bootstrap_difference,
     wilson_interval,
 )
+from ragshield.evaluation.run_saferag_study import _handle_failures
 from ragshield.evaluation.saferag_study_protocol import (
     SYSTEM_SPECS,
     build_bm25_stores,
@@ -60,6 +63,12 @@ class SafeRAGStudyProtocolTests(unittest.TestCase):
 
     def test_frozen_prompt_hashes_match(self):
         verify_frozen_protocol()
+
+    def test_complete_case_mode_can_continue_after_persistent_failure(self):
+        with redirect_stdout(io.StringIO()):
+            _handle_failures(["context_boundary WDoS-47"], "generation", True)
+        with self.assertRaises(RuntimeError):
+            _handle_failures(["context_boundary WDoS-47"], "generation", False)
 
     def test_full_pipeline_screens_ad_and_wraps_remaining_context(self):
         initial = build_initial_contexts(case("SA"), self.stores["SA"])

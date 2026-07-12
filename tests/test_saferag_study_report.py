@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from ragshield.evaluation.saferag_study_report import (
+    _p_value,
     build_summary,
     merge_rows,
     write_blind_audit_sample,
@@ -49,6 +50,7 @@ def judgment(system, response_id, adopted):
         "response_id": response_id,
         "metrics": {
             "attack_adopted": adopted,
+            "attack_evidence": "private benchmark evidence" if adopted else "",
             "attack_mentioned_only": False,
             "refusal": False,
             "grounded": not adopted,
@@ -60,6 +62,10 @@ def judgment(system, response_id, adopted):
 
 
 class SafeRAGStudyReportTests(unittest.TestCase):
+    def test_tiny_p_value_is_not_rendered_as_zero(self):
+        self.assertEqual(_p_value(0.0), "<0.0001")
+        self.assertEqual(_p_value(0.01234), "0.0123")
+
     def test_incomplete_case_is_excluded_from_all_system_estimates(self):
         generations = [generation("baseline", "gen_0"), generation("context_boundary", "gen_1")]
         judgments = [
@@ -100,6 +106,12 @@ class SafeRAGStudyReportTests(unittest.TestCase):
             public = json.loads(audit.read_text(encoding="utf-8"))
             self.assertEqual(len(public["records"]), 3)
             self.assertNotIn("answer", public["records"][0])
+            serialized_audit = audit.read_text(encoding="utf-8")
+            self.assertNotIn("private benchmark evidence", serialized_audit)
+            baseline_metrics = public["records"][0]["judge_metrics"]
+            self.assertNotIn("attack_evidence", baseline_metrics)
+            self.assertTrue(baseline_metrics["attack_evidence_present"])
+            self.assertEqual(len(baseline_metrics["attack_evidence_sha256"]), 64)
             self.assertTrue(blind.exists())
             self.assertTrue(key.exists())
 

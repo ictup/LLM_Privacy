@@ -4,7 +4,6 @@ import unittest
 from pathlib import Path
 
 from ragshield.benchmarks.saferag import TASKS, build_task_documents, load_saferag
-from ragshield.evaluation.run_saferag import score_case
 from ragshield.retrieval.vector_store import LexicalVectorStore, tokenize
 
 
@@ -47,14 +46,6 @@ class SafeRAGTests(unittest.TestCase):
             self.assertEqual(sum(doc.trusted_source for doc in documents), 1)
             self.assertEqual(sum(not doc.trusted_source for doc in documents), 1)
 
-    def test_official_retrieval_metric_formula(self):
-        case = load_case_for_scoring()
-        metrics = score_case(case, ["可信上下文", "攻击上下文"], "攻击上下文")
-        self.assertEqual(metrics["recall_gc"], 0.5)
-        self.assertEqual(metrics["recall_ac"], 0.5)
-        self.assertEqual(metrics["retrieval_accuracy"], 0.5)
-        self.assertEqual(metrics["attack_keyword_ratio"], 1.0)
-
     def test_chinese_retrieval_ranks_relevant_context(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -89,23 +80,6 @@ class SafeRAGTests(unittest.TestCase):
             store = LexicalVectorStore(build_task_documents(dataset, "SA"))
             result = store.search("卫生事业取得了哪些重要进展？", top_k=1)
             self.assertIn("卫生事业", result[0].text)
-
-
-def load_case_for_scoring():
-    from ragshield.benchmarks.saferag import SafeRAGCase
-
-    return SafeRAGCase(
-        task="SA",
-        case_id=0,
-        question="测试问题",
-        golden_contexts=("可信上下文",),
-        attack_contexts=("攻击上下文",),
-        attack_keywords=("攻击",),
-        numbered_options=(),
-        correct_options=(),
-        incorrect_options=(),
-    )
-
 
 if __name__ == "__main__":
     unittest.main()

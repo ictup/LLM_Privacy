@@ -43,6 +43,7 @@ try {
         --split $Split `
         --model $model `
         --judge-model $model `
+        --allow-incomplete `
         --workers $Workers
 }
 finally {

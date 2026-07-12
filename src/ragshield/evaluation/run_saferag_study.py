@@ -45,6 +45,16 @@ def _append_jsonl(path: Path, row: dict[str, Any]) -> None:
         handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def _handle_failures(failures: list[str], stage: str, allow_incomplete: bool) -> None:
+    if not failures:
+        return
+    message = f"{len(failures)} {stage} calls failed"
+    if allow_incomplete:
+        print(f"WARNING: {message}; continuing with complete paired cases.")
+        return
+    raise RuntimeError(f"{message}; rerun to resume.")
+
+
 def _read(path: str | Path) -> list[dict[str, Any]]:
     return list(read_jsonl(path)) if Path(path).exists() else []
 
@@ -142,6 +152,7 @@ def run_generation(
     output: str | Path,
     workers: int,
     max_calls: int | None,
+    allow_incomplete: bool = False,
 ) -> list[dict[str, Any]]:
     dataset = load_saferag(root)
     stores = build_bm25_stores(dataset)
@@ -183,8 +194,7 @@ def run_generation(
             except Exception as error:  # noqa: BLE001 - preserve resumability across API failures
                 failures.append(f"{spec.name} {case.task}-{case.case_id}: {error}")
                 print(f"GEN ERROR {failures[-1]}")
-    if failures:
-        raise RuntimeError(f"{len(failures)} generation calls failed; rerun to resume.")
+    _handle_failures(failures, "generation", allow_incomplete)
     return _read(output_path)
 
 
@@ -226,6 +236,7 @@ def run_judging(
     output: str | Path,
     workers: int,
     max_calls: int | None,
+    allow_incomplete: bool = False,
 ) -> list[dict[str, Any]]:
     dataset = load_saferag(root)
     case_map = {
@@ -296,8 +307,7 @@ def run_judging(
             except Exception as error:  # noqa: BLE001 - preserve resumability across API failures
                 failures.append(f"{generation['system']} {case.task}-{case.case_id}: {error}")
                 print(f"JUDGE ERROR {failures[-1]}")
-    if failures:
-        raise RuntimeError(f"{len(failures)} judge calls failed; rerun to resume.")
+    _handle_failures(failures, "judge", allow_incomplete)
     return _read(output_path)
 
 
@@ -371,6 +381,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-generation-calls", type=int, default=None)
     parser.add_argument("--max-judge-calls", type=int, default=None)
     parser.add_argument(
+        "--allow-incomplete",
+        action="store_true",
+        help="Continue to paired complete-case reporting after persistent call failures.",
+    )
+    parser.add_argument(
         "--generation-output", default="reports/saferag_gpt5mini_generations.jsonl"
     )
     parser.add_argument(
@@ -416,6 +431,7 @@ def main() -> None:
             args.generation_output,
             args.workers,
             args.max_generation_calls,
+            args.allow_incomplete,
         )
     generation_rows = _filter_generation(generation_rows, args.model, args.systems, args.split)
 
@@ -435,6 +451,7 @@ def main() -> None:
             args.judgment_output,
             args.workers,
             args.max_judge_calls,
+            args.allow_incomplete,
         )
     judgment_rows = _filter_judgments(
         judgment_rows,

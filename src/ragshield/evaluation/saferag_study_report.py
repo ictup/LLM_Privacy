@@ -324,6 +324,10 @@ def _pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value * 100:.1f}%"
 
 
+def _p_value(value: float) -> str:
+    return "<0.0001" if value < 0.0001 else f"{value:.4f}"
+
+
 def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
     confirmatory = summary["confirmatory"]
     lines = [
@@ -413,7 +417,7 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
         lines.append(
             f"| {row['treatment']} | {attack['difference']:.3f} "
             f"[{attack['ci_low']:.3f}, {attack['ci_high']:.3f}] | "
-            f"{row['attack_adoption_mcnemar']['p_value']:.4f} | "
+            f"{_p_value(row['attack_adoption_mcnemar']['p_value'])} | "
             f"{utility['difference']:.3f} [{utility['ci_low']:.3f}, "
             f"{utility['ci_high']:.3f}] |"
         )
@@ -467,6 +471,14 @@ def _sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def _public_judge_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
+    public_metrics = dict(metrics)
+    evidence = str(public_metrics.pop("attack_evidence", "")).strip()
+    public_metrics["attack_evidence_present"] = bool(evidence)
+    public_metrics["attack_evidence_sha256"] = _sha256(evidence) if evidence else None
+    return public_metrics
+
+
 def write_public_audit(
     generation_rows: list[dict[str, Any]],
     judgment_rows: list[dict[str, Any]],
@@ -492,7 +504,7 @@ def write_public_audit(
                 "judge_response_id_sha256": _sha256(judgment["response_id"]),
                 "judge_response_status": judgment.get("response_status"),
                 "judge_prompt_hash": judgment.get("judge_prompt_hash"),
-                "judge_metrics": judgment["metrics"],
+                "judge_metrics": _public_judge_metrics(judgment["metrics"]),
                 "generation_usage": generation["usage"],
                 "judge_usage": judgment["usage"],
             }

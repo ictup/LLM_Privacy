@@ -238,7 +238,6 @@ def generate_corpus(size: int = 240, seed: int = 202507) -> list[Document]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", default="configs/baseline.yaml", help="Accepted for workflow parity.")
     parser.add_argument("--size", type=int, default=240, help="Number of synthetic documents.")
     parser.add_argument("--seed", type=int, default=202507, help="Deterministic generation seed.")
     parser.add_argument("--output", default="data/synthetic_docs/corpus.jsonl")
