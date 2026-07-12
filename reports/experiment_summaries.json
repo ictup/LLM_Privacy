@@ -1,0 +1,453 @@
+[
+  {
+    "attack_n": 120,
+    "attack_success_rate": 1.0,
+    "benign_n": 30,
+    "benign_success_rate": 1.0,
+    "by_category": {
+      "benign_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 30,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "cross_tenant_leakage": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 1.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "direct_prompt_injection": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "indirect_prompt_injection": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 1.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 1.0
+      },
+      "mixed_qa": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 1.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 1.0
+      },
+      "retrieval_poisoning": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 1.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 1.0
+      },
+      "sensitive_information_disclosure": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 1.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "system_prompt_leakage": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "tool_misuse": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 1.0
+      }
+    },
+    "config": "configs/baseline.yaml",
+    "leakage_rate": 0.6667,
+    "n": 150,
+    "poisoned_retrieval_influence_rate": 0.4167,
+    "policy_bypass_rate": 0.0,
+    "slug": "baseline",
+    "system": "Baseline RAG",
+    "system_prompt_exposure_rate": 0.6667,
+    "unauthorized_tool_call_rate": 0.5,
+    "violations": {
+      "cross_tenant_data_leakage": 10,
+      "discloses_sensitive_data": 80,
+      "follows_untrusted_instruction": 50,
+      "poisoned_retrieval_influence": 50,
+      "system_prompt_exposure": 80,
+      "unauthorized_tool_call": 60
+    }
+  },
+  {
+    "attack_n": 120,
+    "attack_success_rate": 0.1667,
+    "benign_n": 30,
+    "benign_success_rate": 1.0,
+    "by_category": {
+      "benign_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 30,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "cross_tenant_leakage": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "direct_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "indirect_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "mixed_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "retrieval_poisoning": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "sensitive_information_disclosure": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "system_prompt_leakage": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "tool_misuse": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      }
+    },
+    "config": "configs/context_boundary.yaml",
+    "leakage_rate": 0.0,
+    "n": 150,
+    "poisoned_retrieval_influence_rate": 0.4167,
+    "policy_bypass_rate": 0.0,
+    "slug": "context_boundary",
+    "system": "+ Context Separation",
+    "system_prompt_exposure_rate": 0.0,
+    "unauthorized_tool_call_rate": 0.0,
+    "violations": {
+      "cross_tenant_data_leakage": 10,
+      "poisoned_retrieval_influence": 50
+    }
+  },
+  {
+    "attack_n": 120,
+    "attack_success_rate": 0.1667,
+    "benign_n": 30,
+    "benign_success_rate": 1.0,
+    "by_category": {
+      "benign_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 30,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "cross_tenant_leakage": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "direct_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "indirect_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "mixed_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "retrieval_poisoning": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "sensitive_information_disclosure": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "system_prompt_leakage": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "tool_misuse": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      }
+    },
+    "config": "configs/retrieval_sanitizer.yaml",
+    "leakage_rate": 0.0,
+    "n": 150,
+    "poisoned_retrieval_influence_rate": 0.4167,
+    "policy_bypass_rate": 0.0,
+    "slug": "retrieval_sanitizer",
+    "system": "+ Retrieval Sanitizer",
+    "system_prompt_exposure_rate": 0.0,
+    "unauthorized_tool_call_rate": 0.0,
+    "violations": {
+      "cross_tenant_data_leakage": 10,
+      "poisoned_retrieval_influence": 50
+    }
+  },
+  {
+    "attack_n": 120,
+    "attack_success_rate": 0.1667,
+    "benign_n": 30,
+    "benign_success_rate": 1.0,
+    "by_category": {
+      "benign_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 30,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "cross_tenant_leakage": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "direct_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "indirect_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "mixed_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "retrieval_poisoning": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "sensitive_information_disclosure": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "system_prompt_leakage": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "tool_misuse": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      }
+    },
+    "config": "configs/pii_redaction.yaml",
+    "leakage_rate": 0.0,
+    "n": 150,
+    "poisoned_retrieval_influence_rate": 0.4167,
+    "policy_bypass_rate": 0.0,
+    "slug": "pii_redaction",
+    "system": "+ PII Redaction",
+    "system_prompt_exposure_rate": 0.0,
+    "unauthorized_tool_call_rate": 0.0,
+    "violations": {
+      "cross_tenant_data_leakage": 10,
+      "poisoned_retrieval_influence": 50
+    }
+  },
+  {
+    "attack_n": 120,
+    "attack_success_rate": 0.1667,
+    "benign_n": 30,
+    "benign_success_rate": 1.0,
+    "by_category": {
+      "benign_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 30,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "cross_tenant_leakage": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "direct_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "indirect_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "mixed_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "retrieval_poisoning": {
+        "attack_success_rate": 1.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "sensitive_information_disclosure": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "system_prompt_leakage": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "tool_misuse": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      }
+    },
+    "config": "configs/tool_gate.yaml",
+    "leakage_rate": 0.0,
+    "n": 150,
+    "poisoned_retrieval_influence_rate": 0.4167,
+    "policy_bypass_rate": 0.0,
+    "slug": "tool_gate",
+    "system": "+ Tool Gate",
+    "system_prompt_exposure_rate": 0.0,
+    "unauthorized_tool_call_rate": 0.0,
+    "violations": {
+      "cross_tenant_data_leakage": 10,
+      "poisoned_retrieval_influence": 50
+    }
+  },
+  {
+    "attack_n": 120,
+    "attack_success_rate": 0.0,
+    "benign_n": 30,
+    "benign_success_rate": 1.0,
+    "by_category": {
+      "benign_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 30,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "cross_tenant_leakage": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "direct_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "indirect_prompt_injection": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "mixed_qa": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "retrieval_poisoning": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "sensitive_information_disclosure": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 20,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "system_prompt_leakage": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      },
+      "tool_misuse": {
+        "attack_success_rate": 0.0,
+        "leakage_rate": 0.0,
+        "n": 10,
+        "unauthorized_tool_call_rate": 0.0
+      }
+    },
+    "config": "configs/ragshield_full.yaml",
+    "leakage_rate": 0.0,
+    "n": 150,
+    "poisoned_retrieval_influence_rate": 0.0,
+    "policy_bypass_rate": 0.0,
+    "slug": "ragshield_full",
+    "system": "Full RAGShield",
+    "system_prompt_exposure_rate": 0.0,
+    "unauthorized_tool_call_rate": 0.0,
+    "violations": {}
+  }
+]
