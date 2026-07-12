@@ -28,6 +28,7 @@ class DeepSeekChatClient:
         model: str = FLASH_MODEL,
         *,
         thinking: bool = False,
+        temperature: float = 0.0,
         timeout_seconds: int = 120,
         max_retries: int = 5,
         max_output_tokens: int = 512,
@@ -37,6 +38,7 @@ class DeepSeekChatClient:
     ):
         self.model = model
         self.thinking = thinking
+        self.temperature = temperature
         self.timeout_seconds = timeout_seconds
         self.max_retries = max_retries
         self.max_output_tokens = max_output_tokens
@@ -102,6 +104,7 @@ class DeepSeekChatClient:
             ],
             "max_tokens": self.max_output_tokens,
             "stream": False,
+            "temperature": self.temperature,
             "thinking": {"type": "enabled" if self.thinking else "disabled"},
         }
         if response_format is not None:

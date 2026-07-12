@@ -26,6 +26,7 @@ class DeepSeekChatClientTests(unittest.TestCase):
         self.assertEqual(response.text, "answer")
         self.assertEqual(response.total_tokens, 14)
         self.assertEqual(requests[0]["thinking"], {"type": "disabled"})
+        self.assertEqual(requests[0]["temperature"], 0.0)
         self.assertNotIn("DEEPSEEK_API_KEY", str(requests[0]))
 
     def test_structured_output_checks_required_fields_and_types(self):
