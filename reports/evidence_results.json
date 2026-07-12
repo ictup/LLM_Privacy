@@ -1,0 +1,211 @@
+{
+  "summary_version": "ragshield-evidence-v1",
+  "all_integrity_checks_passed": true,
+  "integrity_checks": {
+    "saferag_complete_paired_cases": true,
+    "tab_full_official_test_split": true,
+    "tensor_trust_complete_paired_cases": true,
+    "privacylens_complete_paired_cases": true,
+    "integrated_control_regression": true
+  },
+  "headline": [
+    {
+      "benchmark": "SafeRAG",
+      "evidence_type": "external_peer_reviewed_real_model",
+      "n": 377,
+      "baseline_security": 0.713528,
+      "selected_security": 0.297082,
+      "baseline_utility": 0.17956,
+      "selected_utility": 0.180272,
+      "selected_system": "ragshield_full",
+      "interpretation": "Strong overall reduction; Silver Noise remains weak."
+    },
+    {
+      "benchmark": "TAB",
+      "evidence_type": "external_peer_reviewed_human_annotated_offline",
+      "n": 127,
+      "baseline_security": 0.0,
+      "selected_security": 0.609944,
+      "baseline_utility": 1.0,
+      "selected_utility": 0.783171,
+      "selected_system": "combined",
+      "interpretation": "NER adds coverage but over-redacts document text."
+    },
+    {
+      "benchmark": "Tensor Trust",
+      "evidence_type": "external_peer_reviewed_real_model",
+      "n": 100,
+      "baseline_security": 0.57,
+      "selected_security": 0.0,
+      "baseline_utility": 0.61,
+      "selected_utility": 0.8,
+      "selected_system": "ragshield_full",
+      "interpretation": "Final zero relies on deterministic authorization and output gating."
+    },
+    {
+      "benchmark": "PrivacyLens",
+      "evidence_type": "external_peer_reviewed_real_model_dual_auto_judge",
+      "n": 50,
+      "baseline_security": 0.56,
+      "selected_security": 0.06,
+      "baseline_utility": 0.94,
+      "selected_utility": 0.8,
+      "selected_system": "ragshield_full",
+      "interpretation": "Lowest leakage has a 14-point helpfulness cost; prompt-only is the best measured trade-off."
+    }
+  ],
+  "ablations": {
+    "saferag": [
+      {
+        "system": "baseline",
+        "n": 377,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.713528,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.17956,
+        "grounded_rate": 0.575597
+      },
+      {
+        "system": "context_boundary",
+        "n": 377,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.405836,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.203664,
+        "grounded_rate": 0.907162
+      },
+      {
+        "system": "ragshield_full",
+        "n": 377,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.297082,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.180272,
+        "grounded_rate": 0.896552
+      }
+    ],
+    "tab": [
+      {
+        "system": "regex_rules",
+        "n": 127,
+        "security_metric": "character_f1",
+        "security_value": 0.0,
+        "utility_metric": "text_retention_rate",
+        "utility_value": 1.0,
+        "full_coverage_recall": 0.0
+      },
+      {
+        "system": "spacy_ner",
+        "n": 127,
+        "security_metric": "character_f1",
+        "security_value": 0.609944,
+        "utility_metric": "text_retention_rate",
+        "utility_value": 0.783171,
+        "full_coverage_recall": 0.673841
+      },
+      {
+        "system": "combined",
+        "n": 127,
+        "security_metric": "character_f1",
+        "security_value": 0.609944,
+        "utility_metric": "text_retention_rate",
+        "utility_value": 0.783171,
+        "full_coverage_recall": 0.673841
+      }
+    ],
+    "tensor_trust": [
+      {
+        "system": "baseline",
+        "n": 100,
+        "security_metric": "attack_success_rate",
+        "security_value": 0.57,
+        "raw_attack_success": 0.57,
+        "utility_metric": "valid_access_success",
+        "utility_value": 0.61
+      },
+      {
+        "system": "context_boundary",
+        "n": 100,
+        "security_metric": "attack_success_rate",
+        "security_value": 0.35,
+        "raw_attack_success": 0.35,
+        "utility_metric": "valid_access_success",
+        "utility_value": 0.87
+      },
+      {
+        "system": "ragshield_full",
+        "n": 100,
+        "security_metric": "attack_success_rate",
+        "security_value": 0.0,
+        "raw_attack_success": 0.36,
+        "utility_metric": "valid_access_success",
+        "utility_value": 0.8
+      }
+    ],
+    "privacylens": [
+      {
+        "system": "baseline",
+        "n": 50,
+        "security_metric": "conservative_dual_judge_leakage",
+        "security_value": 0.56,
+        "utility_metric": "dual_judge_helpful_rate",
+        "utility_value": 0.94,
+        "block_rate": 0.0
+      },
+      {
+        "system": "privacy_prompt",
+        "n": 50,
+        "security_metric": "conservative_dual_judge_leakage",
+        "security_value": 0.14,
+        "utility_metric": "dual_judge_helpful_rate",
+        "utility_value": 0.94,
+        "block_rate": 0.0
+      },
+      {
+        "system": "output_validator",
+        "n": 50,
+        "security_metric": "conservative_dual_judge_leakage",
+        "security_value": 0.14,
+        "utility_metric": "dual_judge_helpful_rate",
+        "utility_value": 0.58,
+        "block_rate": 0.42
+      },
+      {
+        "system": "ragshield_full",
+        "n": 50,
+        "security_metric": "conservative_dual_judge_leakage",
+        "security_value": 0.06,
+        "utility_metric": "dual_judge_helpful_rate",
+        "utility_value": 0.8,
+        "block_rate": 0.14
+      }
+    ]
+  },
+  "judge_and_scoring_scope": {
+    "saferag": "single same-model structured automatic judge",
+    "tab": "human span annotations; deterministic offline scoring",
+    "tensor_trust": "deterministic secret and access-string scoring",
+    "privacylens": "conservative dual-model automatic judging from one provider",
+    "controlled_regression": "deterministic assertions on controlled fixtures"
+  },
+  "evidence_totals": {
+    "external_benchmarks": 4,
+    "external_evaluated_units": 654,
+    "real_model_response_ids_in_deepseek_pilots": 1200,
+    "deterministic_end_to_end_checks": 9
+  },
+  "claim_boundary": {
+    "supported": [
+      "Measured effects under each frozen benchmark protocol.",
+      "Paired module comparisons within SafeRAG, Tensor Trust, and PrivacyLens.",
+      "TAB span-detection performance against official human annotations.",
+      "Composition and fail-closed behavior of the integrated controls on fixtures."
+    ],
+    "unsupported": [
+      "Production-grade or universal LLM security.",
+      "Generalization to untested model families, languages, or adaptive attacks.",
+      "Human-validated accuracy for the automatic LLM judges.",
+      "Differential privacy, federated learning, or homomorphic encryption."
+    ]
+  }
+}

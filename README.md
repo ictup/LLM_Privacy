@@ -218,6 +218,8 @@ no explicit redistribution license.
 
 | Artifact | Purpose |
 |---|---|
+| [Unified evidence summary](reports/evidence_summary.md) | Cross-benchmark scorecard, complete ablations, integrity checks, and claim boundary |
+| [Unified evidence JSON](reports/evidence_results.json) | Machine-readable synthesis generated from all committed result files |
 | [SafeRAG report](reports/saferag_gpt5mini_report.md) | Final metrics, paired effects, task results, and limitations |
 | [SafeRAG result JSON](reports/saferag_gpt5mini_results.json) | Machine-readable aggregate results and execution evidence |
 | [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and judge-consistency metadata |
@@ -304,13 +306,20 @@ powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 
 Raw generations and judgments are Git-ignored. Only aggregate reports and
 secret-free public audits are committed.
 
+Regenerate and verify the unified evidence table without an API key:
+
+```powershell
+$env:PYTHONPATH = "src"
+py -m ragshield.evaluation.build_evidence_summary
+```
+
 ## Repository Layout
 
 ```text
 benchmarks/               Pinned provenance and hashes for external benchmarks
 docs/                     Frozen protocol and interview/application wording
-reports/                  Final SafeRAG aggregate evidence and public audit
-scripts/                  SafeRAG fetcher and GPT-5 mini study runner
+reports/                  Benchmark reports, public audits, and unified evidence
+scripts/                  Benchmark runners and controlled regression entry points
 src/ragshield/            Retrieval, privacy, agents, tracing, and evaluation
 tests/                    Focused unit and report-generation tests
 ```
