@@ -121,7 +121,12 @@ class OpenAIResponsesClient:
         )
         text = _output_text(payload)
         if not text:
-            raise OpenAIAPIError("Responses API returned no output text.")
+            status = str(payload.get("status", "unknown"))
+            details = payload.get("incomplete_details") or {}
+            reason = str(details.get("reason", "not provided"))
+            raise OpenAIAPIError(
+                f"Responses API returned no output text (status={status}, reason={reason})."
+            )
         usage = payload.get("usage", {})
         return ModelResponse(
             response_id=str(payload.get("id", "")),

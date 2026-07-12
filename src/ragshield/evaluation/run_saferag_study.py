@@ -382,7 +382,7 @@ def main() -> None:
         judge_client = OpenAIResponsesClient(
             model=args.judge_model,
             reasoning_effort="medium",
-            max_output_tokens=768,
+            max_output_tokens=4096,
         )
         judgment_rows = run_judging(
             args.root,

@@ -27,7 +27,8 @@ Frozen prompt hashes:
 | ragshield_full | `fe15d4c6bf81b53714c652d96d8006661af10a7937eea62b605e83c813cdb742` |
 
 The snapshot is used instead of the moving `gpt-5.5` alias so that the model condition
-can be reproduced. The generator uses low reasoning effort; the judge uses medium effort.
+can be reproduced. The generator uses low reasoning effort and a 512-token output cap;
+the judge uses medium effort and a 4,096-token cap to accommodate the 18-option tasks.
 
 ## Data Separation
 
