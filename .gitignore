@@ -9,6 +9,7 @@ build/
 dist/
 *.egg-info/
 reports/*.jsonl
+reports/*.trace.jsonl
 reports/*.csv
 reports/*_summary.json
 data/generated/
