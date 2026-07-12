@@ -135,6 +135,33 @@ cache-miss API cost was `$0.0328`. The frozen sample, protocol, aggregate result
 and secret-free public audit are committed; raw prompts and generations remain
 local and Git-ignored.
 
+## Contextual Privacy in Agent Actions
+
+The PrivacyLens pilot uses 50 frozen cases from the
+[NeurIPS 2024 Datasets and Benchmarks release](https://arxiv.org/abs/2409.00138).
+The source-stratified sample contains 34 crowdsourced, 9 literature-derived, and
+7 regulation-derived scenarios. Four paired systems produced 200 final actions,
+which were evaluated independently by `deepseek-v4-flash` and
+`deepseek-v4-pro` in 400 structured judge calls.
+
+| System | Conservative leakage | Helpful | Mean helpfulness / 3 | Block rate |
+|---|---:|---:|---:|---:|
+| Baseline | 56% | 94% | 2.39 | 0% |
+| Privacy prompt | 14% | **94%** | **2.50** | 0% |
+| Output validator | 14% | 58% | 1.51 | 42% |
+| Full RAGShield | **6%** | 80% | 2.16 | 14% |
+
+The privacy prompt reduced leakage by 42 percentage points without a measured
+helpfulness-rate loss (95% paired bootstrap CI for leakage: -56 to -28; exact
+McNemar `p < 0.000001`). Full RAGShield reduced leakage by 50 points (95% CI:
+-64 to -36) but also reduced helpfulness by 14 points, exposing a measurable
+security-utility trade-off. The output validator alone over-blocked 42% of cases.
+
+Sensitive-item labels were withheld from generation and validation and supplied
+only during final scoring. The conservative primary metric counts a leak if
+either automatic judge flags it; helpfulness requires both judges to score at
+least 2/3. This is a dual-model automatic evaluation, not human ground truth.
+
 ## Controlled Security Extensions
 
 The following controls compose into a separate, deterministic security path:
@@ -196,6 +223,9 @@ no explicit redistribution license.
 | [Tensor Trust report](reports/tensor_trust_deepseek_report.md) | Fixed-sample direct injection, extraction, utility, and paired effects |
 | [Tensor Trust result JSON](reports/tensor_trust_deepseek_results.json) | Machine-readable aggregate results and cost evidence |
 | [Tensor Trust public audit](reports/tensor_trust_deepseek_audit.json) | Secret-free response IDs, prompt hashes, usage, and latency |
+| [PrivacyLens report](reports/privacylens_deepseek_report.md) | Contextual leakage, helpfulness, paired effects, and judge agreement |
+| [PrivacyLens result JSON](reports/privacylens_deepseek_results.json) | Machine-readable aggregate results and cost evidence |
+| [PrivacyLens public audit](reports/privacylens_deepseek_audit.json) | Secret-free action hashes and 600 response identifiers |
 
 ## Reproduce
 
@@ -238,6 +268,14 @@ Run or resume the paid Tensor Trust study after setting `DEEPSEEK_API_KEY`:
 py -m ragshield.evaluation.tensor_trust_study --phase all --workers 32
 ```
 
+Validate or run the frozen PrivacyLens pilot:
+
+```powershell
+$env:PYTHONPATH = "src"
+py -m ragshield.evaluation.privacylens_study --phase dry-run
+py -m ragshield.evaluation.privacylens_study --phase all --workers 32
+```
+
 Fetch the pinned SafeRAG data directly from the authors and validate its hashes:
 
 ```powershell
@@ -258,9 +296,8 @@ powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 
   -Phase all -Split all
 ```
 
-The paid runner requires typed confirmation and hidden API-key input. It clears
-the key from the process environment when finished. Raw generations, judgments,
-and blind-review files are Git-ignored.
+Raw generations and judgments are Git-ignored. Only aggregate reports and
+secret-free public audits are committed.
 
 ## Repository Layout
 
@@ -289,11 +326,14 @@ Supported by the current evidence:
 - On the frozen 100-case Tensor Trust sample, the context boundary reduced
   attack success from 57% to 35%, and the full output gate reduced the final
   rate to 0% while retaining 80% valid-access success.
+- On the frozen 50-case PrivacyLens sample, the privacy prompt reduced
+  conservative dual-judge leakage from 56% to 14% without lowering the 94%
+  helpfulness rate; the full system reached 6% leakage and 80% helpfulness.
 
 Not supported by the current evidence:
 
 - Production-grade security against arbitrary or adaptive attacks.
-- Independent judge validity before blind human annotation is completed.
+- Human-validated judge accuracy or independence across model providers.
 - Generalization across model families, retrievers, languages, or repeated runs.
 - Population-level or real-model effectiveness claims for cross-tenant
   isolation or tool misuse.
@@ -301,13 +341,14 @@ Not supported by the current evidence:
 
 ## Limitations and Next Experiments
 
-- The generator and automated judge use the same model snapshot, creating a
-  correlated-bias risk. A 48-answer blinded review sheet exists locally but still
-  requires independent human annotation.
+- SafeRAG uses the same model family for generation and automated judgment,
+  creating a correlated-bias risk.
 - SafeRAG uses a single generation per condition; repeated stochastic runs and
   multiple model families are needed for stronger inference.
 - Tensor Trust is a fixed 100-case pilot rather than the complete benchmark,
   uses a moving DeepSeek alias, and detects verbatim secret extraction only.
+- PrivacyLens is a fixed 50-case pilot. Its two judges use different models from
+  the same provider, and no human annotation validates their final decisions.
 - The retriever is BM25/lexical. Embedding retrievers and rerankers should be
   evaluated under the same paired protocol.
 - Utility F1 is a strict option-level proxy and remained inconclusive. Human

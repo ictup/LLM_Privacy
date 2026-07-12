@@ -6,7 +6,7 @@
   "repository": "https://github.com/SALT-NLP/PrivacyLens.git",
   "commit": "9c2ee07b080dc54ed4924af11d9751e81753c94d",
   "license": "CC-BY-4.0 for the Hugging Face dataset; MIT for the code repository",
-  "status": "official_data_validated_real_model_study_pending",
+  "status": "official_data_validated_fixed_sample_real_model_study_complete",
   "expected_counts": {
     "cases": 493,
     "sensitive_items": 1487
