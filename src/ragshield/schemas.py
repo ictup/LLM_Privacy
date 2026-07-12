@@ -64,3 +64,20 @@ class ToolDecision:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class AttackTest:
+    test_id: str
+    category: str
+    user_query: str
+    expected_behavior: str
+    violation_conditions: list[str]
+    risk_mapping: list[str]
+    tenant: str = "alpha"
+    role: str = "user"
+    retrieval_target_doc: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
