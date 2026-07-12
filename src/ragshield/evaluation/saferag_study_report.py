@@ -370,8 +370,9 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
             lines.append(
                 f"- {row['task']}-{row['case_id']}: generation missing "
                 f"{', '.join(row['missing_generation_systems']) or 'none'}; "
-                f"generated {', '.join(row['available_generation_systems']) or 'none'}. "
-                "The entire case is excluded before judging."
+                f"judgment missing "
+                f"{', '.join(row['missing_judgment_systems']) or 'none'}. "
+                "The entire case is excluded from primary estimates."
             )
     lines.extend(
         [

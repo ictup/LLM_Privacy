@@ -146,6 +146,11 @@ run adopted `complete-case-v1`: `WDoS-47` is excluded across all three systems, 
 378 paired confirmatory cases. The failed and successful generation records remain in the
 execution audit. This operational exclusion does not change prompts, defenses, or labels.
 
+During judging, `WDoS-41/context_boundary` also failed after the initial run and one
+targeted retry. Its entire three-system case is excluded under the same complete-case rule.
+No confirmatory outcome table was inspected before this decision. The final primary sample
+therefore contains 377 complete cases; all successful raw responses remain auditable.
+
 ## Reproduction
 
 ```powershell
