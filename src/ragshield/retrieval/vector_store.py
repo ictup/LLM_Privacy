@@ -27,7 +27,9 @@ class LexicalVectorStore:
 
     def __init__(self, documents: list[Document]):
         self.documents = documents
-        self.doc_terms = [Counter(tokenize(doc.title + " " + doc.text)) for doc in documents]
+        self.doc_terms = [
+            Counter(tokenize(doc.doc_id + " " + doc.title + " " + doc.text)) for doc in documents
+        ]
         document_frequency: Counter[str] = Counter()
         for terms in self.doc_terms:
             document_frequency.update(terms.keys())
@@ -56,6 +58,8 @@ class LexicalVectorStore:
             for term, query_count in query_terms.items():
                 if term in doc_terms:
                     score += query_count * doc_terms[term] * self.idf.get(term, 1.0)
+            if doc.doc_id.lower() in query_terms:
+                score += 20.0
             if query.lower() in doc.text.lower():
                 score += 5.0
             if score > 0:

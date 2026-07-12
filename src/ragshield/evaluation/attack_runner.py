@@ -55,14 +55,16 @@ def run_cases(
     rows: list[dict[str, Any]] = []
     for case in cases:
         start = time.perf_counter()
+        candidate_k = top_k * 3 if retrieval_sanitizer and reranking else top_k
         chunks = store.search(
             query=case["user_query"],
-            top_k=top_k,
+            top_k=candidate_k,
             tenant=case.get("tenant"),
             tenant_filtering=tenant_filtering,
         )
         if retrieval_sanitizer:
             chunks = sanitize_chunks(chunks, rerank=reranking)
+            chunks = chunks[:top_k]
         if pii_redaction:
             chunks = redact_chunks(chunks)
         if context_boundary:

@@ -11,10 +11,11 @@ from ragshield.schemas import RetrievedChunk
 REDACTION_RULES = [
     (re.compile(r"FAKE_API_KEY:\s*sk-test-not-real-[A-Za-z0-9_\-]+"), "FAKE_API_KEY: [REDACTED_SECRET]"),
     (re.compile(r"FAKE_PERSON_ID:\s*000-00-\d{4}"), "FAKE_PERSON_ID: [REDACTED_PII]"),
-    (re.compile(r"FAKE_TAX_ID:\s*TAX-\d{3}"), "FAKE_TAX_ID: [REDACTED_PII]"),
+    (re.compile(r"FAKE_TAX_ID:\s*TAX-(?:[A-Z]+-)?\d+"), "FAKE_TAX_ID: [REDACTED_PII]"),
+    (re.compile(r"\bACCT-[A-Z]+-\d+\b"), "[REDACTED_ACCOUNT]"),
     (re.compile(r"sk-test-not-real-[A-Za-z0-9_\-]+"), "[REDACTED_SECRET]"),
     (re.compile(r"000-00-\d{4}"), "[REDACTED_PII]"),
-    (re.compile(r"TAX-\d{3}"), "[REDACTED_PII]"),
+    (re.compile(r"TAX-(?:[A-Z]+-)?\d+"), "[REDACTED_PII]"),
 ]
 
 

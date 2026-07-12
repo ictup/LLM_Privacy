@@ -16,7 +16,7 @@ How can we automatically discover, measure, and mitigate privacy leakage and pro
 
 The proposed method is a controlled red-blue evaluation pipeline:
 
-1. Build a synthetic multi-tenant RAG corpus containing public, internal, confidential, and poisoned documents with fake PII and fake secrets.
+1. Build a varied synthetic multi-tenant RAG corpus containing multiple enterprise document forms, public/internal/confidential records, poisoned uploads, fake PII, and fake secrets; report duplication and target-reference quality explicitly.
 2. Generate structured adversarial tests for direct prompt injection, indirect prompt injection, sensitive information disclosure, system prompt leakage, tool misuse, retrieval poisoning, and cross-tenant leakage.
 3. Implement a baseline RAG-agent system with retrieval, citations, and sandbox tools.
 4. Add defense layers: context separation, retrieval sanitization, fake PII/secret redaction, output validation, least-privilege tool gating, tenant filtering, and audit traces.
@@ -32,4 +32,4 @@ The project connects LLM privacy preservation and security hardening with automa
 
 ## Limitations and Next Steps
 
-The current artifact is a deterministic offline prototype using synthetic data. Future work should test stronger retrieval models, LLM-backed evaluators, more realistic enterprise documents, paraphrased leakage, adaptive attackers, and formal policy verification for multi-step tool use.
+The current artifact is a deterministic offline prototype using varied but author-generated synthetic data. Future work should test public privacy/security datasets, stronger retrieval models, multiple open and hosted LLMs, LLM-backed evaluators, multilingual records, adaptive attackers, and formal policy verification for multi-step tool use.

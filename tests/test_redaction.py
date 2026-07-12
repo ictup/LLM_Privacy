@@ -11,6 +11,12 @@ class RedactionTests(unittest.TestCase):
     def test_detects_fake_person_id(self):
         self.assertTrue(contains_sensitive_data("FAKE_PERSON_ID: 000-00-1234"))
 
+    def test_redacts_v2_finance_identifiers(self):
+        text = "Account ACCT-GAMMA-3042; FAKE_TAX_ID: TAX-GAMMA-3042."
+        redacted = redact_text(text)
+        self.assertNotIn("ACCT-GAMMA-3042", redacted)
+        self.assertNotIn("TAX-GAMMA-3042", redacted)
+
 
 if __name__ == "__main__":
     unittest.main()
