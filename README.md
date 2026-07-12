@@ -204,7 +204,7 @@ powershell -ExecutionPolicy Bypass -File scripts\run_gpt5mini_interview_suite.ps
 
 Both paid scripts require explicit confirmation and hidden key input. Raw generations and
 blind-review sheets are excluded from Git; public artifacts contain aggregate results and
-hash-based audit records only. Paid runners default to 16 concurrent workers and resumable
+hash-based audit records only. Paid runners default to 32 concurrent workers and resumable
 rate-limit retries; this changes execution time, not the frozen experimental conditions.
 
 ## Implementation Milestones

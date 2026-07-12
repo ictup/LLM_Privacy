@@ -14,7 +14,11 @@ from ragshield.evaluation.run_saferag_llm import (
     summarize,
     write_audit_manifest,
 )
-from ragshield.generation.openai_responses import ModelResponse, OpenAIResponsesClient
+from ragshield.generation.openai_responses import (
+    ModelResponse,
+    OpenAIAPIError,
+    OpenAIResponsesClient,
+)
 
 
 def make_case(task: str = "SA") -> SafeRAGCase:
@@ -32,6 +36,28 @@ def make_case(task: str = "SA") -> SafeRAGCase:
 
 
 class OpenAIResponsesClientTests(unittest.TestCase):
+    def test_rejects_partial_text_from_incomplete_response(self):
+        def transport(_payload):
+            return {
+                "id": "resp_incomplete",
+                "model": "gpt-5-mini-2025-08-07",
+                "status": "incomplete",
+                "incomplete_details": {"reason": "max_output_tokens"},
+                "output": [
+                    {
+                        "type": "message",
+                        "content": [{"type": "output_text", "text": "partial answer"}],
+                    }
+                ],
+                "usage": {"input_tokens": 10, "output_tokens": 512, "total_tokens": 522},
+            }
+
+        client = OpenAIResponsesClient(
+            model="gpt-5-mini-2025-08-07", api_key="test-only", transport=transport
+        )
+        with self.assertRaisesRegex(OpenAIAPIError, "status=incomplete"):
+            client.generate("instructions", "input")
+
     def test_parses_response_text_usage_and_identifiers(self):
         captured = []
 

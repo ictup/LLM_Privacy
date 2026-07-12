@@ -1,5 +1,5 @@
 param(
-    [int]$Workers = 16
+    [int]$Workers = 32
 )
 
 $model = "gpt-5-mini-2025-08-07"

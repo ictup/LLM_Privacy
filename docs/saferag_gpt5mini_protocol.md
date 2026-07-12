@@ -12,7 +12,7 @@ learning, differential privacy, or homomorphic encryption.
 
 ## Frozen Study Identity
 
-- Protocol: `saferag-gpt5mini-confirmatory-v5`
+- Protocol: `saferag-gpt5mini-confirmatory-v6`
 - Generator snapshot: `gpt-5-mini-2025-08-07`
 - Automated judge snapshot: `gpt-5-mini-2025-08-07`
 - API: OpenAI Responses API with `store=false`
@@ -32,7 +32,7 @@ The frozen structured-judge instruction and schema hash is
 `659df569cde98d0731f9eeb366b6d985e026da8093e941122b180bfea2259cd9`.
 
 The fixed snapshot is used instead of the moving `gpt-5-mini` alias. The generator uses
-low reasoning effort and a 512-token output cap; the judge uses medium reasoning effort
+low reasoning effort and a 2,048-token output cap; the judge uses medium reasoning effort
 and a 4,096-token cap to accommodate the 18-option tasks.
 
 ## Complete Dataset and Separation
@@ -134,6 +134,12 @@ an explicitly supported incorrect option. Version 5 simplifies the judge schema 
 both decisions into deterministic metric code. No confirmatory output was generated under
 v2, v3, or v4. Defense prompts, data split, and statistical tests remain unchanged.
 
+Version 5 began confirmatory generation but produced no confirmatory judgments. Metadata
+validation found that 550 of 1,135 returned rows exactly reached the 512-token cap and two
+additional requests failed without output. Those rows are excluded. Version 6 raises the
+generation cap to 2,048 and rejects every API payload whose status is not `completed`.
+No v5 answer content or confirmatory metric was used to modify the defense.
+
 ## Reproduction
 
 ```powershell
@@ -157,6 +163,6 @@ SafeRAG requires 2,322 calls for all 387 cases: 1,161 generations and 1,161 judg
 The complete interview suite adds 612 controlled-canary generations for 2,934 calls total.
 The paid runners require explicit `RUN` confirmation and hidden API-key entry. They resume
 from local JSONL logs and never write the key to source, reports, or command arguments.
-The default runner uses 16 concurrent workers with five retry attempts, server-provided
+The default runner uses 32 concurrent workers with five retry attempts, server-provided
 `Retry-After` handling, and exponential backoff. Concurrency affects wall-clock time only;
 the frozen prompts, cases, model snapshot, endpoints, and scoring remain unchanged.

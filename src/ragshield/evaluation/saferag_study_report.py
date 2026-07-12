@@ -230,6 +230,14 @@ def build_summary(
             ),
             "unique_judge_response_ids": len({row["response_id"] for row in judgment_rows}),
             "initial_context_pair_mismatches": mismatches,
+            "non_completed_generation_rows": sum(
+                row.get("response_status", "completed") != "completed"
+                for row in generation_rows
+            ),
+            "non_completed_judgment_rows": sum(
+                row.get("response_status", "completed") != "completed"
+                for row in judgment_rows
+            ),
             "judge_consistency_flagged_rows": sum(
                 not row["metrics"].get("judge_consistent", True) for row in judgment_rows
             ),
@@ -412,8 +420,10 @@ def write_public_audit(
                 "initial_context_hash": generation["initial_context_hash"],
                 "final_context_hash": generation["final_context_hash"],
                 "generation_response_id_sha256": _sha256(generation["response_id"]),
+                "generation_response_status": generation.get("response_status"),
                 "answer_sha256": _sha256(generation["answer"]),
                 "judge_response_id_sha256": _sha256(judgment["response_id"]),
+                "judge_response_status": judgment.get("response_status"),
                 "judge_prompt_hash": judgment.get("judge_prompt_hash"),
                 "judge_metrics": judgment["metrics"],
                 "generation_usage": generation["usage"],

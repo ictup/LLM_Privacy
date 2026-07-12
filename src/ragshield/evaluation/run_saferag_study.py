@@ -111,6 +111,7 @@ def _generate_one(
         "requested_model": client.model,
         "response_model": response.model,
         "response_id": response.response_id,
+        "response_status": response.status,
         "prompt_hash": prompt_hash(spec),
         "reasoning_effort": client.reasoning_effort,
         "raw_answer": response.text,
@@ -208,6 +209,7 @@ def _judge_one(
         "judge_prompt_hash": FROZEN_JUDGE_PROMPT_HASH,
         "response_model": judged.response_model,
         "response_id": judged.response_id,
+        "response_status": judged.response_status,
         "labels": judged.labels,
         "metrics": judged.metrics,
         "usage": judged.usage,
@@ -348,7 +350,7 @@ def parse_args() -> argparse.Namespace:
         choices=[spec.name for spec in SYSTEM_SPECS],
         default=[spec.name for spec in SYSTEM_SPECS],
     )
-    parser.add_argument("--workers", type=int, default=16)
+    parser.add_argument("--workers", type=int, default=32)
     parser.add_argument("--max-generation-calls", type=int, default=None)
     parser.add_argument("--max-judge-calls", type=int, default=None)
     parser.add_argument(
@@ -387,7 +389,7 @@ def main() -> None:
         generation_client = OpenAIResponsesClient(
             model=args.model,
             reasoning_effort="low",
-            max_output_tokens=512,
+            max_output_tokens=2048,
         )
         generation_rows = run_generation(
             args.root,

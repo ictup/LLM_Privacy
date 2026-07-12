@@ -231,6 +231,7 @@ def _run_one(
         "requested_model": client.model,
         "response_model": response.model,
         "response_id": response.response_id,
+        "response_status": response.status,
         "prompt_hash": _hash(spec.instructions),
         "query": case["user_query"],
         "expected_behavior": case["expected_behavior"],
@@ -388,7 +389,7 @@ def parse_args() -> argparse.Namespace:
         choices=[spec.name for spec in SYSTEMS],
         default=[spec.name for spec in SYSTEMS],
     )
-    parser.add_argument("--workers", type=int, default=16)
+    parser.add_argument("--workers", type=int, default=32)
     parser.add_argument("--max-calls", type=int, default=None)
     parser.add_argument(
         "--case-output", default="reports/synthetic_gpt5mini_generations.jsonl"
@@ -412,7 +413,7 @@ def main() -> None:
         client = OpenAIResponsesClient(
             model=args.model,
             reasoning_effort="low",
-            max_output_tokens=512,
+            max_output_tokens=2048,
         )
         rows = run(client, args.systems, args.case_output, args.workers, args.max_calls)
     if args.phase in {"report", "all"}:

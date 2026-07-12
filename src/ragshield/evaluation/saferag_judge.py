@@ -81,6 +81,7 @@ class JudgedAnswer:
     metrics: dict[str, Any]
     response_id: str
     response_model: str
+    response_status: str
     usage: dict[str, int]
     latency_ms: float
 
@@ -184,6 +185,7 @@ def judge_answer(
         metrics=compute_judge_metrics(case, result.data),
         response_id=response.response_id,
         response_model=response.model,
+        response_status=response.status,
         usage={
             "input_tokens": response.input_tokens,
             "output_tokens": response.output_tokens,

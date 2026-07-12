@@ -28,6 +28,7 @@ class ModelResponse:
     output_tokens: int
     total_tokens: int
     latency_ms: float
+    status: str = "completed"
 
 
 @dataclass(frozen=True)
@@ -120,6 +121,13 @@ class OpenAIResponsesClient:
         payload = (
             self.transport(request_payload) if self.transport else self._request(request_payload)
         )
+        status = str(payload.get("status", "completed"))
+        if status != "completed":
+            details = payload.get("incomplete_details") or {}
+            reason = str(details.get("reason", "not provided"))
+            raise OpenAIAPIError(
+                f"Responses API did not complete (status={status}, reason={reason})."
+            )
         text = _output_text(payload)
         if not text:
             status = str(payload.get("status", "unknown"))
@@ -137,6 +145,7 @@ class OpenAIResponsesClient:
             output_tokens=int(usage.get("output_tokens", 0)),
             total_tokens=int(usage.get("total_tokens", 0)),
             latency_ms=round((time.perf_counter() - started) * 1000, 3),
+            status=status,
         )
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
