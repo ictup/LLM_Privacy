@@ -151,6 +151,18 @@ python -m ragshield.evaluation.failure_analysis --report-dir reports
 python -m unittest discover -s tests
 ```
 
+Real OpenAI model pilot on SafeRAG (16 paid API calls at the default two cases per task):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_saferag_llm_pilot.ps1
+```
+
+The script requests a newly created API key using hidden terminal input and keeps it only
+in the child process environment. It records response IDs, resolved model names, token
+usage, latency, and model answers. This controlled generation test uses labeled SafeRAG
+contexts and the paper's attack-keyword formula, but it does not claim to reproduce the
+paper's BM25 retrieval or LLM-based QuestEval results.
+
 ## Implementation Milestones
 
 1. Initialize the repository, safety boundary, and configuration.
@@ -171,7 +183,7 @@ python -m unittest discover -s tests
 
 Only run this project on self-owned local systems with synthetic or author-released
 research data, following the source terms and without unauthorized redistribution. Do not
-use real credentials, real private data, production services, or third-party systems.
+commit credentials, use real private data, or target unauthorized third-party systems.
 Do not publish payloads intended for credential theft, malware, unauthorized
 access, or real data exfiltration.
 
