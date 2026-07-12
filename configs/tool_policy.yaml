@@ -1,0 +1,20 @@
+tools:
+  search_docs:
+    risk: low
+    allowed_roles: ["user", "analyst", "admin"]
+    requires_approval: false
+
+  update_ticket:
+    risk: medium
+    allowed_roles: ["analyst", "admin"]
+    requires_approval: true
+
+  send_email:
+    risk: high
+    allowed_roles: ["admin"]
+    requires_approval: true
+
+  read_secret_store:
+    risk: critical
+    allowed_roles: []
+    requires_approval: true
