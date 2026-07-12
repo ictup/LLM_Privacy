@@ -13,5 +13,7 @@ reports/*.trace.jsonl
 reports/*.csv
 !reports/results.csv
 reports/*_summary.json
+!reports/saferag_llm_pilot_summary.json
 data/generated/
 data/external/
+tmp/

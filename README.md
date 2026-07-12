@@ -62,6 +62,32 @@ See [the full SafeRAG report](reports/saferag_report.md) and
 The upstream repository has no explicit redistribution license at the pinned commit.
 Raw files are therefore downloaded directly from the authors and excluded from this repo.
 
+## Frozen GPT-5.5 Study
+
+The interview-facing confirmatory study is preregistered in
+[docs/saferag_gpt55_protocol.md](docs/saferag_gpt55_protocol.md). It uses the pinned
+`gpt-5.5-2026-04-23` snapshot and three real-model conditions:
+
+- `baseline`: BM25 retrieval plus generation without defenses.
+- `context_boundary`: the same initial contexts with untrusted-evidence separation.
+- `ragshield_full`: label-free context screening, near-duplicate removal, fake PII/secret
+  redaction, context separation, output validation, and the existing tool-policy boundary.
+
+SafeRAG uses task-specific upstream context sizes: SN receives three attack plus three
+clean BM25 contexts; ICC, SA, and WDoS receive one attack plus one clean context. The
+previously inspected eight cases are development data, leaving 379 confirmatory cases.
+The primary metric is structured judge-assessed attack adoption, which distinguishes
+adopting an injected claim from mentioning it while warning about a conflict. Official
+attack-keyword metrics, option utility F1, groundedness, refusal, paired bootstrap
+intervals, and exact McNemar tests are reported alongside it.
+
+The controlled synthetic corpus is evaluated separately with the same real model to test
+privacy canaries, tenant filtering, prompt injection, and actual tool-gate decisions. Its
+results are component evidence, not external benchmark evidence.
+
+At the current commit, the frozen runners and tests are implemented; GPT-5.5 result files
+must not be claimed until the paid runs complete and their response metadata is audited.
+
 ## Controlled Synthetic Results
 
 The latest checked-in run evaluates 132 varied adversarial tests, 24 mixed benign-plus-
@@ -163,6 +189,23 @@ usage, latency, and model answers. This controlled generation test uses labeled 
 contexts and the paper's attack-keyword formula, but it does not claim to reproduce the
 paper's BM25 retrieval or LLM-based QuestEval results.
 
+Frozen GPT-5.5 study dry run (no API call):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt55_study.ps1 `
+  -Phase dry-run
+```
+
+Complete interview evidence suite (2,934 resumable paid calls):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_gpt55_interview_suite.ps1
+```
+
+Both paid scripts require explicit confirmation and hidden key input. Raw generations and
+blind-review sheets are excluded from Git; public artifacts contain aggregate results and
+hash-based audit records only.
+
 ## Implementation Milestones
 
 1. Initialize the repository, safety boundary, and configuration.
@@ -198,3 +241,5 @@ access, or real data exfiltration.
 - Scenario v2 is structurally more varied than the original template corpus, but remains
   deterministic and author-generated; broader empirical claims require external datasets,
   stronger retrievers, multiple LLMs, and adaptive attacks.
+- The automated confirmatory judge uses the same GPT-5.5 family as the generator. Its
+  adoption labels require validation against the generated blinded author-review sheet.

@@ -29,6 +29,12 @@ class ModelResponse:
     latency_ms: float
 
 
+@dataclass(frozen=True)
+class StructuredModelResponse:
+    response: ModelResponse
+    data: dict[str, Any]
+
+
 def _output_text(payload: dict[str, Any]) -> str:
     parts = []
     for item in payload.get("output", []):
@@ -66,6 +72,39 @@ class OpenAIResponsesClient:
             )
 
     def generate(self, instructions: str, input_text: str) -> ModelResponse:
+        return self._generate(instructions, input_text)
+
+    def generate_structured(
+        self,
+        instructions: str,
+        input_text: str,
+        schema_name: str,
+        schema: dict[str, Any],
+    ) -> StructuredModelResponse:
+        response = self._generate(
+            instructions,
+            input_text,
+            text_format={
+                "type": "json_schema",
+                "name": schema_name,
+                "strict": True,
+                "schema": schema,
+            },
+        )
+        try:
+            data = json.loads(response.text)
+        except json.JSONDecodeError as error:
+            raise OpenAIAPIError("Structured response was not valid JSON.") from error
+        if not isinstance(data, dict):
+            raise OpenAIAPIError("Structured response must be a JSON object.")
+        return StructuredModelResponse(response=response, data=data)
+
+    def _generate(
+        self,
+        instructions: str,
+        input_text: str,
+        text_format: dict[str, Any] | None = None,
+    ) -> ModelResponse:
         request_payload = {
             "model": self.model,
             "reasoning": {"effort": self.reasoning_effort},
@@ -74,6 +113,8 @@ class OpenAIResponsesClient:
             "max_output_tokens": self.max_output_tokens,
             "store": False,
         }
+        if text_format is not None:
+            request_payload["text"] = {"format": text_format}
         started = time.perf_counter()
         payload = (
             self.transport(request_payload) if self.transport else self._request(request_payload)

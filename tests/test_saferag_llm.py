@@ -11,6 +11,8 @@ from ragshield.evaluation.run_saferag_llm import (
     build_input,
     run,
     score_attack_keywords,
+    summarize,
+    write_audit_manifest,
 )
 from ragshield.generation.openai_responses import ModelResponse, OpenAIResponsesClient
 
@@ -65,6 +67,39 @@ class OpenAIResponsesClientTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "OPENAI_API_KEY is not set"):
                 OpenAIResponsesClient(model="gpt-5.6-luna")
 
+    def test_structured_response_uses_strict_json_schema(self):
+        captured = []
+
+        def transport(payload):
+            captured.append(payload)
+            return {
+                "id": "resp_structured",
+                "model": "gpt-5.5-2026-04-23",
+                "output": [
+                    {
+                        "type": "message",
+                        "content": [
+                            {"type": "output_text", "text": '{"allowed": false}'}
+                        ],
+                    }
+                ],
+                "usage": {"input_tokens": 10, "output_tokens": 4, "total_tokens": 14},
+            }
+
+        schema = {
+            "type": "object",
+            "properties": {"allowed": {"type": "boolean"}},
+            "required": ["allowed"],
+            "additionalProperties": False,
+        }
+        client = OpenAIResponsesClient(
+            model="gpt-5.5-2026-04-23", api_key="test-only", transport=transport
+        )
+        result = client.generate_structured("judge", "input", "decision", schema)
+        self.assertEqual(result.data, {"allowed": False})
+        self.assertEqual(captured[0]["text"]["format"]["type"], "json_schema")
+        self.assertTrue(captured[0]["text"]["format"]["strict"])
+
 
 class SafeRAGRealLLMTests(unittest.TestCase):
     def test_context_selection_is_deterministic(self):
@@ -115,6 +150,7 @@ class SafeRAGRealLLMTests(unittest.TestCase):
         dataset = SimpleNamespace(cases={"SA": [make_case()]})
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "cases.jsonl"
+            audit_output = Path(directory) / "audit.json"
             with patch(
                 "ragshield.evaluation.run_saferag_llm.load_saferag",
                 return_value=dataset,
@@ -139,6 +175,8 @@ class SafeRAGRealLLMTests(unittest.TestCase):
                     output=output,
                     client=fake,
                 )
+            write_audit_manifest(rows, "gpt-test", audit_output)
+            audit = __import__("json").loads(audit_output.read_text(encoding="utf-8"))
 
         self.assertEqual(len(rows), 2)
         self.assertEqual(len(resumed_rows), 2)
@@ -146,6 +184,14 @@ class SafeRAGRealLLMTests(unittest.TestCase):
         self.assertEqual(fake.calls[0][1], fake.calls[1][1])
         self.assertEqual(rows[0]["response_id"], "resp_1")
         self.assertEqual(rows[0]["usage"]["total_tokens"], 40)
+        summary = summarize(rows, "gpt-test")
+        self.assertEqual(summary["execution_evidence"]["unique_response_ids"], 2)
+        self.assertEqual(summary["execution_evidence"]["total_tokens"], 80)
+        self.assertEqual(summary["execution_evidence"]["paired_context_hash_mismatches"], 0)
+        self.assertEqual(len(audit["records"]), 2)
+        self.assertEqual(len(audit["records"][0]["response_id_sha256"]), 64)
+        self.assertNotIn("response_id", audit["records"][0])
+        self.assertNotIn("answer", audit["records"][0])
 
 
 if __name__ == "__main__":

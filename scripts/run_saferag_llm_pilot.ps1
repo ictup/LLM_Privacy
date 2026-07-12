@@ -15,7 +15,8 @@ try {
         --limit-per-task $LimitPerTask `
         --case-output "reports/saferag_llm_pilot_cases.jsonl" `
         --json-output "reports/saferag_llm_pilot_summary.json" `
-        --markdown-output "reports/saferag_llm_pilot_report.md"
+        --markdown-output "reports/saferag_llm_pilot_report.md" `
+        --audit-output "reports/saferag_llm_pilot_audit.json"
 }
 finally {
     Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue
