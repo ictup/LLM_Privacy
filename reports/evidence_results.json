@@ -1,11 +1,13 @@
 {
-  "summary_version": "ragshield-evidence-v1",
+  "summary_version": "ragshield-evidence-v2",
   "all_integrity_checks_passed": true,
   "integrity_checks": {
     "saferag_complete_paired_cases": true,
     "tab_full_official_test_split": true,
     "tensor_trust_complete_paired_cases": true,
     "privacylens_complete_paired_cases": true,
+    "saferag_cross_provider_rejudge_complete": true,
+    "silver_noise_semantic_study_complete": true,
     "integrated_control_regression": true
   },
   "headline": [
@@ -179,10 +181,78 @@
         "utility_value": 0.8,
         "block_rate": 0.14
       }
+    ],
+    "saferag_deepseek_rejudge": [
+      {
+        "system": "baseline",
+        "n": 377,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.602122,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.193747,
+        "grounded_rate": 0.570292
+      },
+      {
+        "system": "context_boundary",
+        "n": 377,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.34748,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.218451,
+        "grounded_rate": 0.830239
+      },
+      {
+        "system": "ragshield_full",
+        "n": 377,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.220159,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.170471,
+        "grounded_rate": 0.70557
+      }
+    ],
+    "silver_noise_semantic": [
+      {
+        "system": "baseline",
+        "n": 98,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.387755,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.376239,
+        "grounded_rate": 0.959184
+      },
+      {
+        "system": "context_boundary",
+        "n": 98,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.469388,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.316949,
+        "grounded_rate": 0.94898
+      },
+      {
+        "system": "ragshield_full",
+        "n": 98,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.408163,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.265944,
+        "grounded_rate": 0.969388
+      },
+      {
+        "system": "semantic_provenance",
+        "n": 98,
+        "security_metric": "attack_adoption_rate",
+        "security_value": 0.336735,
+        "utility_metric": "option_macro_f1",
+        "utility_value": 0.215753,
+        "grounded_rate": 0.867347
+      }
     ]
   },
   "judge_and_scoring_scope": {
-    "saferag": "single same-model structured automatic judge",
+    "saferag": "original same-model judge plus complete DeepSeek cross-provider rejudge",
+    "silver_noise_semantic": "DeepSeek Flash generation and DeepSeek Pro automatic judge",
     "tab": "human span annotations; deterministic offline scoring",
     "tensor_trust": "deterministic secret and access-string scoring",
     "privacylens": "conservative dual-model automatic judging from one provider",
@@ -191,13 +261,15 @@
   "evidence_totals": {
     "external_benchmarks": 4,
     "external_evaluated_units": 654,
-    "real_model_response_ids_in_deepseek_pilots": 1200,
+    "real_model_response_ids_in_deepseek_studies": 3231,
     "deterministic_end_to_end_checks": 9
   },
   "claim_boundary": {
     "supported": [
       "Measured effects under each frozen benchmark protocol.",
       "Paired module comparisons within SafeRAG, Tensor Trust, and PrivacyLens.",
+      "Cross-provider rejudging reproduces the direction of the main SafeRAG effect.",
+      "The Silver Noise semantic-defense study exposes a non-significant security signal and significant utility cost.",
       "TAB span-detection performance against official human annotations.",
       "Composition and fail-closed behavior of the integrated controls on fixtures."
     ],

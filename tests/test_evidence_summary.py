@@ -11,8 +11,8 @@ class EvidenceSummaryTests(unittest.TestCase):
         self.assertEqual(summary["evidence_totals"]["external_benchmarks"], 4)
         self.assertEqual(summary["evidence_totals"]["external_evaluated_units"], 654)
         self.assertEqual(
-            summary["evidence_totals"]["real_model_response_ids_in_deepseek_pilots"],
-            1200,
+            summary["evidence_totals"]["real_model_response_ids_in_deepseek_studies"],
+            3231,
         )
 
     def test_summary_preserves_negative_tradeoffs(self):
@@ -21,12 +21,28 @@ class EvidenceSummaryTests(unittest.TestCase):
             row["system"]: row for row in summary["ablations"]["privacylens"]
         }
         tab = {row["system"]: row for row in summary["ablations"]["tab"]}
+        silver = {
+            row["system"]: row
+            for row in summary["ablations"]["silver_noise_semantic"]
+        }
+        rejudge = {
+            row["system"]: row
+            for row in summary["ablations"]["saferag_deepseek_rejudge"]
+        }
 
         self.assertLess(
             privacy["ragshield_full"]["utility_value"],
             privacy["baseline"]["utility_value"],
         )
         self.assertLess(tab["combined"]["utility_value"], tab["regex_rules"]["utility_value"])
+        self.assertLess(
+            silver["semantic_provenance"]["utility_value"],
+            silver["baseline"]["utility_value"],
+        )
+        self.assertLess(
+            rejudge["ragshield_full"]["security_value"],
+            rejudge["baseline"]["security_value"],
+        )
 
 
 if __name__ == "__main__":

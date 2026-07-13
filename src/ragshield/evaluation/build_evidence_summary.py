@@ -23,11 +23,17 @@ def build_summary(report_dir: str | Path = "reports") -> dict[str, Any]:
     tensor = _load(root / "tensor_trust_deepseek_results.json")
     privacy = _load(root / "privacylens_deepseek_results.json")
     controls = _load(root / "security_controls_results.json")
+    saferag_rejudge = _load(root / "saferag_deepseek_rejudge_results.json")
+    silver_noise = _load(root / "saferag_silver_noise_deepseek_results.json")
 
     safe_systems = _safe_systems(saferag)
     tab_systems = tab["systems"]
     tensor_systems = tensor["overall"]
     privacy_systems = privacy["overall"]
+    rejudge_systems = {row["system"]: row for row in saferag_rejudge["overall"]}
+    silver_systems = {
+        row["system"]: row for row in silver_noise["confirmatory_overall"]
+    }
 
     integrity_checks = {
         "saferag_complete_paired_cases": (
@@ -45,6 +51,19 @@ def build_summary(report_dir: str | Path = "reports") -> dict[str, Any]:
         "privacylens_complete_paired_cases": (
             privacy["study"]["complete_cases"] == privacy["study"]["planned_cases"] == 50
             and len(privacy["study"]["judge_models"]) == 2
+        ),
+        "saferag_cross_provider_rejudge_complete": (
+            saferag_rejudge["confirmatory_cases"] == 377
+            and saferag_rejudge["judgment_rows"] == 1131
+            and saferag_rejudge["unique_response_ids"] == 1131
+            and all(row["n"] == 377 for row in rejudge_systems.values())
+        ),
+        "silver_noise_semantic_study_complete": (
+            silver_noise["confirmatory_cases"] == 98
+            and all(row["n"] == 98 for row in silver_systems.values())
+            and silver_noise["usage"]["semantic_screening"]["unique_response_ids"] == 100
+            and silver_noise["usage"]["generation"]["unique_response_ids"] == 400
+            and silver_noise["usage"]["judging"]["unique_response_ids"] == 400
         ),
         "integrated_control_regression": bool(controls["all_checks_passed"]),
     }
@@ -98,6 +117,30 @@ def build_summary(report_dir: str | Path = "reports") -> dict[str, Any]:
             }
             for system, row in privacy_systems.items()
         ],
+        "saferag_deepseek_rejudge": [
+            {
+                "system": system,
+                "n": row["n"],
+                "security_metric": "attack_adoption_rate",
+                "security_value": row["attack_adoption_rate"],
+                "utility_metric": "option_macro_f1",
+                "utility_value": row["utility_f1"],
+                "grounded_rate": row["grounded_rate"],
+            }
+            for system, row in rejudge_systems.items()
+        ],
+        "silver_noise_semantic": [
+            {
+                "system": system,
+                "n": row["n"],
+                "security_metric": "attack_adoption_rate",
+                "security_value": row["attack_adoption_rate"],
+                "utility_metric": "option_macro_f1",
+                "utility_value": row["utility_f1"],
+                "grounded_rate": row["grounded_rate"],
+            }
+            for system, row in silver_systems.items()
+        ],
     }
 
     headline = [
@@ -148,13 +191,14 @@ def build_summary(report_dir: str | Path = "reports") -> dict[str, Any]:
     ]
 
     return {
-        "summary_version": "ragshield-evidence-v1",
+        "summary_version": "ragshield-evidence-v2",
         "all_integrity_checks_passed": all(integrity_checks.values()),
         "integrity_checks": integrity_checks,
         "headline": headline,
         "ablations": ablations,
         "judge_and_scoring_scope": {
-            "saferag": "single same-model structured automatic judge",
+            "saferag": "original same-model judge plus complete DeepSeek cross-provider rejudge",
+            "silver_noise_semantic": "DeepSeek Flash generation and DeepSeek Pro automatic judge",
             "tab": "human span annotations; deterministic offline scoring",
             "tensor_trust": "deterministic secret and access-string scoring",
             "privacylens": "conservative dual-model automatic judging from one provider",
@@ -168,13 +212,15 @@ def build_summary(report_dir: str | Path = "reports") -> dict[str, Any]:
                 + tensor["study"]["complete_cases"]
                 + privacy["study"]["complete_cases"]
             ),
-            "real_model_response_ids_in_deepseek_pilots": 1200,
+            "real_model_response_ids_in_deepseek_studies": 3231,
             "deterministic_end_to_end_checks": len(controls["checks"]),
         },
         "claim_boundary": {
             "supported": [
                 "Measured effects under each frozen benchmark protocol.",
                 "Paired module comparisons within SafeRAG, Tensor Trust, and PrivacyLens.",
+                "Cross-provider rejudging reproduces the direction of the main SafeRAG effect.",
+                "The Silver Noise semantic-defense study exposes a non-significant security signal and significant utility cost.",
                 "TAB span-detection performance against official human annotations.",
                 "Composition and fail-closed behavior of the integrated controls on fixtures.",
             ],
@@ -216,6 +262,8 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
         "tab": ("Character F1 (higher)", "Text retention (higher)"),
         "tensor_trust": ("Attack success (lower)", "Valid access (higher)"),
         "privacylens": ("Leakage (lower)", "Helpful (higher)"),
+        "saferag_deepseek_rejudge": ("Attack adoption (lower)", "Option F1 (higher)"),
+        "silver_noise_semantic": ("Attack adoption (lower)", "Option F1 (higher)"),
     }
     lines.extend(["", "## Complete Ablations", ""])
     for benchmark, rows in summary["ablations"].items():
@@ -248,7 +296,7 @@ def write_markdown(summary: dict[str, Any], output: str | Path) -> None:
             "",
             f"- External peer-reviewed benchmarks: {totals['external_benchmarks']}",
             f"- Evaluated external units across benchmark primary analyses: {totals['external_evaluated_units']}",
-            f"- DeepSeek response IDs in the two new pilots: {totals['real_model_response_ids_in_deepseek_pilots']}",
+            f"- DeepSeek response IDs across completed studies: {totals['real_model_response_ids_in_deepseek_studies']}",
             f"- Integrated deterministic checks: {totals['deterministic_end_to_end_checks']}",
             "",
             "Counts are not pooled into one effectiveness estimate because the benchmarks measure different tasks.",

@@ -43,6 +43,14 @@ The utility-F1 difference was 0.001 (95% CI: -0.023 to 0.024). Because the
 interval crosses zero, this experiment does not establish either a utility gain
 or a utility loss.
 
+A frozen cross-provider re-evaluation then sent the same 1,131 GPT-generated
+answers to `deepseek-v4-pro`. It estimated attack adoption at 60.2% for baseline
+and 22.0% for full RAGShield: a paired difference of -38.2 points (95% CI -44.0
+to -32.4; exact McNemar `p < 0.0001`). The direction and large effect therefore
+replicated under an independent provider, although GPT/DeepSeek label agreement
+was only 74.3% (Cohen's kappa 0.479). This supports effect robustness, not human
+ground-truth validity.
+
 ### Result by SafeRAG task
 
 | Task | N | Baseline adoption | Full adoption | Difference |
@@ -55,6 +63,27 @@ or a utility loss.
 SN is the main negative result. The current rule-based context screener is much
 less effective when misleading evidence looks semantically plausible and does
 not contain recognizable attack instructions.
+
+### Silver Noise semantic-defense follow-up
+
+A separately frozen DeepSeek study evaluated all 100 SN cases (98 confirmatory)
+with a label-blind semantic/provenance screen. The screen received only the
+question and six retrieved documents; attack labels and reference answers were
+withheld until scoring.
+
+| System | N | Attack adoption | Utility F1 |
+|---|---:|---:|---:|
+| Baseline | 98 | 38.8% | 37.6% |
+| Context boundary | 98 | 46.9% | 31.7% |
+| Current full RAGShield | 98 | 40.8% | 26.6% |
+| Semantic provenance | 98 | **33.7%** | 21.6% |
+
+The semantic system's -5.1-point difference versus baseline was not significant
+(95% CI -15.3 to 5.1; McNemar `p = 0.442`). Its -7.1-point difference versus the
+current full system was also not significant (`p = 0.248`), while utility fell
+significantly. The verifier quarantined only 6.1% of attack contexts and retained
+89.1% of clean contexts. This is a genuine negative result: semantic screening
+shows a directional signal but is not yet an effective or calibrated defense.
 
 ## Evaluated Architecture
 
@@ -224,6 +253,10 @@ no explicit redistribution license.
 | [SafeRAG report](reports/saferag_gpt5mini_report.md) | Final metrics, paired effects, task results, and limitations |
 | [SafeRAG result JSON](reports/saferag_gpt5mini_results.json) | Machine-readable aggregate results and execution evidence |
 | [SafeRAG public audit](reports/saferag_gpt5mini_audit.json) | Hashes, response status, usage, and judge-consistency metadata |
+| [DeepSeek rejudge report](reports/saferag_deepseek_rejudge_report.md) | Cross-provider replication, agreement, paired effects, and cost |
+| [DeepSeek rejudge audit](reports/saferag_deepseek_rejudge_audit.json) | Secret-free hashes and 1,131 independent judgment records |
+| [Silver Noise report](reports/saferag_silver_noise_deepseek_report.md) | Four-system semantic-defense study and negative trade-off result |
+| [Silver Noise audit](reports/saferag_silver_noise_deepseek_audit.json) | Secret-free evidence for 100 screens, 400 generations, and 400 judgments |
 | [TAB offline report](reports/tab_offline_report.md) | External human-annotated PII span metrics and privacy-utility trade-off |
 | [TAB result JSON](reports/tab_offline_results.json) | Machine-readable aggregate detector results |
 | [Tensor Trust report](reports/tensor_trust_deepseek_report.md) | Fixed-sample direct injection, extraction, utility, and paired effects |
@@ -304,6 +337,15 @@ powershell -ExecutionPolicy Bypass -File scripts\run_saferag_gpt5mini_study.ps1 
   -Phase all -Split all
 ```
 
+Validate or resume the frozen cross-provider rejudge and Silver Noise studies:
+
+```powershell
+py -m ragshield.evaluation.saferag_deepseek_rejudge --phase dry-run
+py -m ragshield.evaluation.saferag_deepseek_rejudge --phase all --workers 32
+py -m ragshield.evaluation.saferag_silver_noise_study --phase dry-run
+py -m ragshield.evaluation.saferag_silver_noise_study --phase all --workers 32
+```
+
 Raw generations and judgments are Git-ignored. Only aggregate reports and
 secret-free public audits are committed.
 
@@ -331,7 +373,11 @@ Supported by the current evidence:
 
 - Under the frozen protocol, RAGShield reduced judge-assessed SafeRAG attack
   adoption on 377 complete paired cases.
+- A complete DeepSeek rejudge reproduced the direction and large size of the
+  main SafeRAG effect on the same 1,131 answers.
 - WDoS and ICC improved substantially; SN remains a clear open problem.
+- The SN semantic follow-up produced a non-significant security signal and a
+  significant utility cost, so it does not establish an improved defense.
 - The execution and paired statistical analysis are reproducible from the
   pinned benchmark, protocol, model snapshot, and local raw logs.
 - Deterministic tests establish that the prototype privacy, tool, tenant, and
@@ -348,7 +394,7 @@ Supported by the current evidence:
 Not supported by the current evidence:
 
 - Production-grade security against arbitrary or adaptive attacks.
-- Human-validated judge accuracy or independence across model providers.
+- Human-validated accuracy for either automatic SafeRAG judge.
 - Generalization across model families, retrievers, languages, or repeated runs.
 - Population-level or real-model effectiveness claims for cross-tenant
   isolation or tool misuse.
@@ -356,10 +402,14 @@ Not supported by the current evidence:
 
 ## Limitations and Next Experiments
 
-- SafeRAG uses the same model family for generation and automated judgment,
-  creating a correlated-bias risk.
+- The original SafeRAG study used the same model family for generation and
+  judgment. A DeepSeek rejudge reproduced the main effect, but moderate agreement
+  (kappa 0.479) shows that automatic endpoint definitions remain uncertain.
 - SafeRAG uses a single generation per condition; repeated stochastic runs and
   multiple model families are needed for stronger inference.
+- The Silver Noise semantic verifier had only 6.1% attack-context recall and its
+  apparent security improvement was not significant; provenance metadata and
+  better calibration are needed.
 - Tensor Trust is a fixed 100-case pilot rather than the complete benchmark,
   uses a moving DeepSeek alias, and detects verbatim secret extraction only.
 - PrivacyLens is a fixed 50-case pilot. Its two judges use different models from

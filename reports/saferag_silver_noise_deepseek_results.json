@@ -1,0 +1,199 @@
+{
+  "benchmark": "SafeRAG",
+  "task": "SN",
+  "study": "semantic_provenance_defense",
+  "protocol_version": "saferag-silver-noise-deepseek-semantic-v1",
+  "protocol_hash": "37fba832f10790fe0ab6e35d4c4d930261185bbec294d2e76294d4a0e58a9ea6",
+  "analysis_version": "complete-paired-confirmatory-v1",
+  "saferag_commit": "e8f579743b23e0a3937076dcc0792fe29027cba3",
+  "screen_model": "deepseek-v4-flash",
+  "generator_model": "deepseek-v4-flash",
+  "judge_model": "deepseek-v4-pro",
+  "judge_prompt_hash": "659df569cde98d0731f9eeb366b6d985e026da8093e941122b180bfea2259cd9",
+  "development_cases": 2,
+  "confirmatory_cases": 98,
+  "confirmatory_overall": [
+    {
+      "system": "baseline",
+      "n": 98,
+      "attack_adoption_rate": 0.387755,
+      "attack_adoption_ci95": [
+        0.297265,
+        0.486713
+      ],
+      "utility_f1": 0.376239,
+      "grounded_rate": 0.959184,
+      "refusal_rate": 0,
+      "avg_context_count": 6
+    },
+    {
+      "system": "context_boundary",
+      "n": 98,
+      "attack_adoption_rate": 0.469388,
+      "attack_adoption_ci95": [
+        0.37361,
+        0.567475
+      ],
+      "utility_f1": 0.316949,
+      "grounded_rate": 0.94898,
+      "refusal_rate": 0.010204,
+      "avg_context_count": 6
+    },
+    {
+      "system": "ragshield_full",
+      "n": 98,
+      "attack_adoption_rate": 0.408163,
+      "attack_adoption_ci95": [
+        0.316108,
+        0.507146
+      ],
+      "utility_f1": 0.265944,
+      "grounded_rate": 0.969388,
+      "refusal_rate": 0.020408,
+      "avg_context_count": 5.888
+    },
+    {
+      "system": "semantic_provenance",
+      "n": 98,
+      "attack_adoption_rate": 0.336735,
+      "attack_adoption_ci95": [
+        0.250901,
+        0.434885
+      ],
+      "utility_f1": 0.215753,
+      "grounded_rate": 0.867347,
+      "refusal_rate": 0.102041,
+      "avg_context_count": 5.49
+    }
+  ],
+  "primary_semantic_vs_current_full": {
+    "baseline": "ragshield_full",
+    "treatment": "semantic_provenance",
+    "attack_adoption_difference": {
+      "n": 98,
+      "difference": -0.071429,
+      "ci_low": -0.173469,
+      "ci_high": 0.030612
+    },
+    "attack_adoption_mcnemar": {
+      "baseline_only": 17,
+      "treatment_only": 10,
+      "discordant": 27,
+      "p_value": 0.24778856
+    },
+    "utility_f1_difference": {
+      "n": 98,
+      "difference": -0.050191,
+      "ci_low": -0.096204,
+      "ci_high": -0.003201
+    }
+  },
+  "paired_vs_baseline": [
+    {
+      "baseline": "baseline",
+      "treatment": "context_boundary",
+      "attack_adoption_difference": {
+        "n": 98,
+        "difference": 0.081633,
+        "ci_low": -0.020408,
+        "ci_high": 0.183673
+      },
+      "attack_adoption_mcnemar": {
+        "baseline_only": 10,
+        "treatment_only": 18,
+        "discordant": 28,
+        "p_value": 0.18493334
+      },
+      "utility_f1_difference": {
+        "n": 98,
+        "difference": -0.05929,
+        "ci_low": -0.118626,
+        "ci_high": 0.000471
+      }
+    },
+    {
+      "baseline": "baseline",
+      "treatment": "ragshield_full",
+      "attack_adoption_difference": {
+        "n": 98,
+        "difference": 0.020408,
+        "ci_low": -0.091837,
+        "ci_high": 0.132653
+      },
+      "attack_adoption_mcnemar": {
+        "baseline_only": 15,
+        "treatment_only": 17,
+        "discordant": 32,
+        "p_value": 0.86005007
+      },
+      "utility_f1_difference": {
+        "n": 98,
+        "difference": -0.110294,
+        "ci_low": -0.164618,
+        "ci_high": -0.056185
+      }
+    },
+    {
+      "baseline": "baseline",
+      "treatment": "semantic_provenance",
+      "attack_adoption_difference": {
+        "n": 98,
+        "difference": -0.05102,
+        "ci_low": -0.153061,
+        "ci_high": 0.05102
+      },
+      "attack_adoption_mcnemar": {
+        "baseline_only": 16,
+        "treatment_only": 11,
+        "discordant": 27,
+        "p_value": 0.44206834
+      },
+      "utility_f1_difference": {
+        "n": 98,
+        "difference": -0.160485,
+        "ci_low": -0.217294,
+        "ci_high": -0.106456
+      }
+    }
+  ],
+  "semantic_screen_confirmatory": {
+    "n_cases": 98,
+    "attack_context_quarantine_recall": 0.061224,
+    "clean_context_retention_rate": 0.891156,
+    "quarantine_precision": 0.36,
+    "mean_contexts_quarantined": 0.510204
+  },
+  "usage": {
+    "semantic_screening": {
+      "rows": 100,
+      "unique_response_ids": 100,
+      "input_tokens": 71361,
+      "output_tokens": 23346,
+      "total_tokens": 94707,
+      "estimated_usd_cache_miss": 0.016527
+    },
+    "generation": {
+      "rows": 400,
+      "unique_response_ids": 400,
+      "input_tokens": 208629,
+      "output_tokens": 59531,
+      "total_tokens": 268160,
+      "estimated_usd_cache_miss": 0.045877
+    },
+    "judging": {
+      "rows": 400,
+      "unique_response_ids": 400,
+      "input_tokens": 738950,
+      "output_tokens": 76210,
+      "total_tokens": 815160,
+      "estimated_usd_cache_miss": 0.387746
+    },
+    "estimated_total_usd_cache_miss": 0.45015
+  },
+  "limitations": [
+    "The semantic verifier has no external source metadata and may rely on model priors.",
+    "Generator and judge are different DeepSeek models from the same provider.",
+    "The study uses one deterministic generation per system and case.",
+    "This task-specific experiment does not establish generalization beyond Chinese SafeRAG Silver Noise."
+  ]
+}

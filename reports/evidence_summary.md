@@ -51,19 +51,38 @@
 | `output_validator` | 50 | 14.0% | 58.0% |
 | `ragshield_full` | 50 | 6.0% | 80.0% |
 
+### Saferag Deepseek Rejudge
+
+| System | N | Attack adoption (lower) | Option F1 (higher) |
+|---|---:|---:|---:|
+| `baseline` | 377 | 60.2% | 19.4% |
+| `context_boundary` | 377 | 34.7% | 21.8% |
+| `ragshield_full` | 377 | 22.0% | 17.0% |
+
+### Silver Noise Semantic
+
+| System | N | Attack adoption (lower) | Option F1 (higher) |
+|---|---:|---:|---:|
+| `baseline` | 98 | 38.8% | 37.6% |
+| `context_boundary` | 98 | 46.9% | 31.7% |
+| `ragshield_full` | 98 | 40.8% | 26.6% |
+| `semantic_provenance` | 98 | 33.7% | 21.6% |
+
 ## Integrity Checks
 
 - [x] `saferag_complete_paired_cases`
 - [x] `tab_full_official_test_split`
 - [x] `tensor_trust_complete_paired_cases`
 - [x] `privacylens_complete_paired_cases`
+- [x] `saferag_cross_provider_rejudge_complete`
+- [x] `silver_noise_semantic_study_complete`
 - [x] `integrated_control_regression`
 
 ## Evidence Totals
 
 - External peer-reviewed benchmarks: 4
 - Evaluated external units across benchmark primary analyses: 654
-- DeepSeek response IDs in the two new pilots: 1200
+- DeepSeek response IDs across completed studies: 3231
 - Integrated deterministic checks: 9
 
 Counts are not pooled into one effectiveness estimate because the benchmarks measure different tasks.
@@ -74,6 +93,8 @@ Supported:
 
 - Measured effects under each frozen benchmark protocol.
 - Paired module comparisons within SafeRAG, Tensor Trust, and PrivacyLens.
+- Cross-provider rejudging reproduces the direction of the main SafeRAG effect.
+- The Silver Noise semantic-defense study exposes a non-significant security signal and significant utility cost.
 - TAB span-detection performance against official human annotations.
 - Composition and fail-closed behavior of the integrated controls on fixtures.
 

@@ -21,9 +21,26 @@ and answer-suppression patterns. Silver Noise looks like ordinary relevant
 evidence, so lexical attack signatures provide little separation. This is the
 clearest motivation for learned provenance and semantic contradiction models.
 
+The follow-up tested that idea rather than assuming it worked. On 98 confirmatory
+Silver Noise cases, a label-blind DeepSeek semantic/provenance screen changed
+attack adoption from 38.8% to 33.7% versus baseline, but the paired interval
+crossed zero (-15.3 to 5.1 points; McNemar `p = 0.442`). Utility F1 fell from
+37.6% to 21.6%. The screen quarantined only 6.1% of attack contexts while
+retaining 89.1% of clean contexts. The current semantic prompt is therefore
+under-sensitive and is not supported as an improved defense.
+
 Full-system option F1 was 18.0%, effectively unchanged from the 18.0% baseline;
 the paired confidence interval crossed zero. The experiment therefore does not
 establish utility preservation or improvement.
+
+## SafeRAG Judges: Direction Replicates, Labels Differ
+
+The complete DeepSeek rejudge of 1,131 frozen GPT-generated answers reproduced a
+large full-system effect: 60.2% to 22.0%, a paired reduction of 38.2 points.
+However, exact GPT/DeepSeek agreement was 74.3% and Cohen's kappa was 0.479; on
+Silver Noise alone, kappa was only 0.167. Cross-provider replication strengthens
+the direction of the main result but does not convert automatic labels into
+human ground truth.
 
 ## TAB: Coverage and Over-Redaction Trade Off
 
@@ -77,8 +94,9 @@ real-world rates for cross-tenant leakage or unauthorized tool use.
 
 ## Research Priorities
 
-1. Learn source provenance and semantic conflict rather than adding keyword rules.
+1. Add authenticated source metadata and train/calibrate semantic conflict models;
+   the first label-blind prompt screen was under-sensitive.
 2. Calibrate privacy validators to reduce unnecessary blocking.
-3. Add independent-provider and human validation for automatic judge endpoints.
+3. Add human validation for automatic judge endpoints and analyze disagreement.
 4. Repeat stochastic runs and evaluate additional generator and retriever families.
 5. Test adaptive attacks against the complete retrieval-to-tool execution path.

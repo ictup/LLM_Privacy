@@ -35,8 +35,12 @@ privacy-validator over-blocking.
 - Attack adoption: 71.4% baseline, 40.6% context boundary, 29.7% full.
 - Full versus baseline: -41.6 percentage points, 95% paired CI -47.7 to
   -35.8, exact McNemar `p < 0.0001`.
+- A complete DeepSeek rejudge of the same 1,131 answers reproduced a -38.2-point
+  full-system effect; exact judge agreement was 74.3%, kappa 0.479.
 - Utility-F1 difference was inconclusive.
-- Main failure: Silver Noise improved only 7.1 points.
+- Main failure: the new 98-case Silver Noise semantic defense reached 33.7%
+  adoption versus 38.8% baseline, but the difference was not significant and
+  utility F1 fell from 37.6% to 21.6%.
 
 ### 2. Tensor Trust: Direct Hijacking and Extraction
 
@@ -69,7 +73,8 @@ privacy-validator over-blocking.
 **Did real LLMs run?**
 
 Yes. The SafeRAG study used a pinned GPT-5 mini snapshot. Tensor Trust and
-PrivacyLens used 1,200 successful DeepSeek response IDs in total. TAB is an
+PrivacyLens used 1,200 successful DeepSeek response IDs; the SafeRAG rejudge and
+Silver Noise follow-up added 2,031, for 3,231 DeepSeek responses in total. TAB is an
 offline detector study and makes no LLM calls. The integrated tool/tenant
 regression is deterministic and must not be described as a real-model benchmark.
 
@@ -85,8 +90,10 @@ crowdsourcing; it does not contain private victim records.
 
 No for the new pilots. Tensor Trust scoring uses access codes only after model
 generation. PrivacyLens sensitive-item labels are withheld from generation and
-output validation and supplied only to the automatic judges. Frozen sample IDs
-and protocol files were committed before the paid runs.
+output validation and supplied only to the automatic judges. The Silver Noise
+semantic screen sees only the question and retrieved documents, with no attack
+labels or reference answers. Frozen sample IDs and protocol files were committed
+before the paid runs.
 
 **Why are there controlled fixtures?**
 
@@ -107,7 +114,9 @@ retains only small deterministic fixtures for security regression.
 The strongest scientific result is not a single lowest number. It is the paired
 evidence that different layers solve different failures: context boundaries help
 without blocking, hard output gates can eliminate residual attacks but reduce
-utility, and semantic noise remains difficult for rules.
+utility, and semantic noise remains difficult even for the first label-blind
+semantic screen. The cross-provider rejudge also shows that effect direction can
+replicate while individual automatic labels still disagree.
 
 **What is the PhD research direction?**
 

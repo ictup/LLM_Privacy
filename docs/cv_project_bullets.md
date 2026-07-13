@@ -17,6 +17,9 @@ evidence; they are not instructions to alter already-submitted application files
   a source-stratified 50-case PrivacyLens pilot.
 - Reduced judge-assessed SafeRAG attack adoption from 71.4% to 29.7% (paired
   difference -41.6 points, 95% CI -47.7 to -35.8; exact McNemar `p < 0.0001`).
+- Rejudged all 1,131 frozen SafeRAG answers with DeepSeek Pro; the independent
+  provider reproduced a -38.2-point full-system effect, while moderate kappa
+  (0.479) exposed automatic-judge uncertainty.
 - On Tensor Trust, reduced final attack success from 57% to 0% with layered
   authorization/output gating while retaining 80% valid-access success; raw
   full-system model attack success remained 36%.
@@ -24,9 +27,10 @@ evidence; they are not instructions to alter already-submitted application files
   privacy instructions at unchanged 94% helpfulness; the full system reached 6%
   leakage and 80% helpfulness.
 - Preserved reproducibility through pinned benchmark commits, frozen samples,
-  resumable 32-worker runners, cost preflights, paired statistics, 1,200 DeepSeek
+  resumable 32-worker runners, cost preflights, paired statistics, 3,231 DeepSeek
   response IDs, and public audits that exclude raw benchmark content.
-- Documented negative results: weak SafeRAG Silver Noise robustness, TAB
+- Documented negative results: a 98-case semantic Silver Noise defense produced
+  no significant security gain and reduced utility; TAB
   over-redaction and person recall, Tensor Trust dependence on deterministic
   gates, and PrivacyLens output-validator over-blocking.
 

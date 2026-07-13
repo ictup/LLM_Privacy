@@ -36,8 +36,12 @@ hashes, complete-case rules, paired bootstrap intervals, and exact McNemar tests
 
 ## Current Evidence
 
-- SafeRAG: attack adoption fell from 71.4% to 29.7% on 377 paired cases;
-  Silver Noise improved only 7.1 points and utility remained inconclusive.
+- SafeRAG: attack adoption fell from 71.4% to 29.7% on 377 paired cases; a
+  complete DeepSeek rejudge reproduced a 38.2-point paired reduction on the same
+  answers, with moderate cross-judge agreement (kappa 0.479).
+- Silver Noise follow-up: a label-blind semantic screen changed adoption from
+  38.8% to 33.7%, but the effect was not significant and utility F1 fell from
+  37.6% to 21.6%; the proposed semantic defense remains an open problem.
 - Tensor Trust: attack success fell from 57% to 35% with context separation and
   to a final 0% with authorization/output gating on 100 paired cases; valid
   access was 80% in the full system.
