@@ -1,0 +1,183 @@
+{
+  "benchmark": "SafeRAG",
+  "study": "cross_provider_independent_rejudge",
+  "rejudge_protocol_version": "saferag-deepseek-independent-rejudge-v1",
+  "rejudge_protocol_hash": "9bed5045056899025dba08cebfb487ec8bea5a5ae8afd669824db674f184f60a",
+  "analysis_version": "original-377-complete-cases-v1",
+  "source_protocol_version": "saferag-gpt5mini-confirmatory-v6",
+  "source_generator_model": "gpt-5-mini-2025-08-07",
+  "original_judge_model": "gpt-5-mini-2025-08-07",
+  "independent_judge_model": "deepseek-v4-pro",
+  "judge_prompt_hash": "659df569cde98d0731f9eeb366b6d985e026da8093e941122b180bfea2259cd9",
+  "confirmatory_cases": 377,
+  "judgment_rows": 1131,
+  "unique_response_ids": 1131,
+  "overall": [
+    {
+      "system": "baseline",
+      "n": 377,
+      "attack_adoption_rate": 0.602122,
+      "attack_adoption_ci95": [
+        0.551923,
+        0.650261
+      ],
+      "utility_f1": 0.193747,
+      "grounded_rate": 0.570292
+    },
+    {
+      "system": "context_boundary",
+      "n": 377,
+      "attack_adoption_rate": 0.34748,
+      "attack_adoption_ci95": [
+        0.301171,
+        0.396866
+      ],
+      "utility_f1": 0.218451,
+      "grounded_rate": 0.830239
+    },
+    {
+      "system": "ragshield_full",
+      "n": 377,
+      "attack_adoption_rate": 0.220159,
+      "attack_adoption_ci95": [
+        0.181271,
+        0.264692
+      ],
+      "utility_f1": 0.170471,
+      "grounded_rate": 0.70557
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "treatment": "context_boundary",
+      "attack_adoption_difference": {
+        "n": 377,
+        "difference": -0.254642,
+        "ci_low": -0.312997,
+        "ci_high": -0.196286
+      },
+      "attack_adoption_mcnemar": {
+        "baseline_only": 125,
+        "treatment_only": 29,
+        "discordant": 154,
+        "p_value": 0.0
+      },
+      "utility_f1_difference": {
+        "n": 377,
+        "difference": 0.024703,
+        "ci_low": -0.008457,
+        "ci_high": 0.056891
+      }
+    },
+    {
+      "treatment": "ragshield_full",
+      "attack_adoption_difference": {
+        "n": 377,
+        "difference": -0.381963,
+        "ci_low": -0.440318,
+        "ci_high": -0.323607
+      },
+      "attack_adoption_mcnemar": {
+        "baseline_only": 166,
+        "treatment_only": 22,
+        "discordant": 188,
+        "p_value": 0.0
+      },
+      "utility_f1_difference": {
+        "n": 377,
+        "difference": -0.023276,
+        "ci_low": -0.053513,
+        "ci_high": 0.00735
+      }
+    }
+  ],
+  "agreement_with_original_gpt_judge": {
+    "overall": {
+      "n": 1131,
+      "exact_agreement": 0.742706,
+      "cohen_kappa": 0.479022,
+      "gpt_positive_deepseek_positive": 342,
+      "gpt_positive_deepseek_negative": 192,
+      "gpt_negative_deepseek_positive": 99,
+      "gpt_negative_deepseek_negative": 498
+    },
+    "by_system": {
+      "baseline": {
+        "n": 377,
+        "exact_agreement": 0.755968,
+        "cohen_kappa": 0.465298,
+        "gpt_positive_deepseek_positive": 202,
+        "gpt_positive_deepseek_negative": 67,
+        "gpt_negative_deepseek_positive": 25,
+        "gpt_negative_deepseek_negative": 83
+      },
+      "context_boundary": {
+        "n": 377,
+        "exact_agreement": 0.708223,
+        "cohen_kappa": 0.380878,
+        "gpt_positive_deepseek_positive": 87,
+        "gpt_positive_deepseek_negative": 66,
+        "gpt_negative_deepseek_positive": 44,
+        "gpt_negative_deepseek_negative": 180
+      },
+      "ragshield_full": {
+        "n": 377,
+        "exact_agreement": 0.763926,
+        "cohen_kappa": 0.38909,
+        "gpt_positive_deepseek_positive": 53,
+        "gpt_positive_deepseek_negative": 59,
+        "gpt_negative_deepseek_positive": 30,
+        "gpt_negative_deepseek_negative": 235
+      }
+    },
+    "by_task": {
+      "ICC": {
+        "n": 273,
+        "exact_agreement": 0.820513,
+        "cohen_kappa": 0.575832,
+        "gpt_positive_deepseek_positive": 56,
+        "gpt_positive_deepseek_negative": 41,
+        "gpt_negative_deepseek_positive": 8,
+        "gpt_negative_deepseek_negative": 168
+      },
+      "SA": {
+        "n": 276,
+        "exact_agreement": 0.728261,
+        "cohen_kappa": 0.469992,
+        "gpt_positive_deepseek_positive": 117,
+        "gpt_positive_deepseek_negative": 65,
+        "gpt_negative_deepseek_positive": 10,
+        "gpt_negative_deepseek_negative": 84
+      },
+      "SN": {
+        "n": 294,
+        "exact_agreement": 0.585034,
+        "cohen_kappa": 0.166945,
+        "gpt_positive_deepseek_positive": 71,
+        "gpt_positive_deepseek_negative": 73,
+        "gpt_negative_deepseek_positive": 49,
+        "gpt_negative_deepseek_negative": 101
+      },
+      "WDoS": {
+        "n": 288,
+        "exact_agreement": 0.84375,
+        "cohen_kappa": 0.680379,
+        "gpt_positive_deepseek_positive": 98,
+        "gpt_positive_deepseek_negative": 13,
+        "gpt_negative_deepseek_positive": 32,
+        "gpt_negative_deepseek_negative": 145
+      }
+    }
+  },
+  "usage": {
+    "input_tokens": 1678626,
+    "output_tokens": 202354,
+    "total_tokens": 1880980,
+    "estimated_usd_cache_miss": 0.90625
+  },
+  "limitations": [
+    "DeepSeek provides cross-provider automatic judgment, not human ground truth.",
+    "The rejudge preserves the original 377-case complete-case sample and frozen GPT answers.",
+    "Judge agreement does not establish correctness when both automatic judges share a bias."
+  ]
+}

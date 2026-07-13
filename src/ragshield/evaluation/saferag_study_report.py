@@ -27,6 +27,8 @@ from ragshield.evaluation.saferag_study_protocol import (
 MODEL_STANDARD_PRICES = {
     "gpt-5-mini-2025-08-07": {"input": 0.25, "output": 2.0},
     "gpt-5.5-2026-04-23": {"input": 5.0, "output": 30.0},
+    "deepseek-v4-flash": {"input": 0.14, "output": 0.28},
+    "deepseek-v4-pro": {"input": 0.435, "output": 0.87},
 }
 ANALYSIS_VERSION = "complete-case-v1"
 
@@ -264,7 +266,11 @@ def build_summary(
     development = _split_summary(merged, generation_rows, "development")
     confirmatory = _split_summary(merged, generation_rows, "confirmatory")
     limitations = [
-        "The generator and automated judge use the same model family.",
+        (
+            "The generator and automated judge use the same model family."
+            if generator_model == judge_model
+            else "Cross-provider judging reduces correlated model-family bias but does not create human ground truth."
+        ),
         "Human blind review is required before claiming judge validity.",
         "SafeRAG evaluates data-injection security, not differential privacy.",
         "The label-free defense may miss plausible, semantically injected facts.",
